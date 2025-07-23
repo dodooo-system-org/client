@@ -12,11 +12,13 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from '@/components/ui/sidebar';
-import { Home, Library, LucideProps, Users } from 'lucide-react';
+import { Home, Library, LogOut, LucideProps, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
+import { LogoLink } from '../global/logo-link';
 import { SearchForm } from '../global/search-form';
+import { Button } from '../ui/button';
 
 type DataType = {
     navMain: Array<{
@@ -83,6 +85,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return (
         <Sidebar {...props}>
             <SidebarHeader>
+                <div className="flex items-center justify-between p-1">
+                    <LogoLink />
+                    <Button
+                        size="icon"
+                        variant="outline"
+                        className="[&_svg]:size-5"
+                    >
+                        <LogOut />
+                    </Button>
+                </div>
                 <SearchForm />
             </SidebarHeader>
             <SidebarContent>
