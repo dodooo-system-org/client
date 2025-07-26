@@ -17,7 +17,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { LogoLink } from '../global/logo-link';
-import { SearchForm } from '../global/search-form';
 import { Button } from '../ui/button';
 
 type DataType = {
@@ -95,7 +94,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         <LogOut />
                     </Button>
                 </div>
-                <SearchForm />
             </SidebarHeader>
             <SidebarContent>
                 {/* We create a SidebarGroup for each parent. */}

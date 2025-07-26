@@ -1,9 +1,10 @@
-declare module 'types/objects' {
+declare module '@/types/objects' {
     interface TimeStampBase {
         createdAt: Date;
         updatedAt?: Date | null;
         deletedAt?: Date | null;
-        status: 0 | 1; // 0: Active, 1: Inactive
+        isActive: 0 | 1; // 0: Active, 1: Inactive
+        isDeleted: 0 | 1; // 0: Not Deleted, 1: Deleted
     }
 
     interface Category extends TimeStampBase {

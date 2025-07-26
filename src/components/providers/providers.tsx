@@ -1,3 +1,4 @@
+import { ReactQueryProvider } from './react-query-provider';
 import { ThemeProvider } from './theme-provider';
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
@@ -8,7 +9,7 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
             enableSystem
             disableTransitionOnChange
         >
-            {children}
+            <ReactQueryProvider>{children}</ReactQueryProvider>
         </ThemeProvider>
     );
 };
