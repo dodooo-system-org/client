@@ -1,8 +1,8 @@
 import { ThemeSwitcher } from '@/components/global/theme-switcher';
-import { AdminBreadcrumbs } from '@/components/local/admin-breadcrumbs';
-import { AdminGreeting } from '@/components/local/admin-greeting';
-import { AdminNotification } from '@/components/local/admin-notification';
-import { AppSidebar } from '@/components/local/admin-sidebar';
+import { AdminBreadcrumbs } from '@/components/local/admin/admin-breadcrumbs';
+import { AdminGreeting } from '@/components/local/admin/admin-greeting';
+import { AdminNotification } from '@/components/local/admin/admin-notification';
+import { AppSidebar } from '@/components/local/admin/admin-sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
     SidebarInset,

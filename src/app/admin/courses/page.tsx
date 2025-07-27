@@ -1,4 +1,4 @@
-import { CourseList } from '@/components/local/admin-course-list';
+import { CourseList } from '@/components/local/admin/admin-course-list';
 
 export default function AdminCoursesPage() {
     return (

@@ -16,8 +16,8 @@ import { Home, Library, LogOut, LucideProps, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
-import { LogoLink } from '../global/logo-link';
-import { Button } from '../ui/button';
+import { LogoLink } from '../../global/logo-link';
+import { Button } from '../../ui/button';
 
 type DataType = {
     navMain: Array<{

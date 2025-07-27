@@ -2,6 +2,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 import { CoursePreview } from '@/types/objects';
 import { Calendar, Package, Presentation } from 'lucide-react';
 import Image from 'next/image';
@@ -18,15 +19,26 @@ export const CourseCard = memo(
                     >
                         <Image
                             src={coursePreview.courseImageUrl || '/800x400.svg'}
-                            blurDataURL=""
+                            loading="lazy"
+                            blurDataURL="/800x400.svg"
                             alt="Course Image"
                             width={100}
                             height={200}
                             className="h-full w-full rounded-md object-cover object-center"
                         />
-                        {!coursePreview.isActive && (
-                            <div className="absolute top-3 -right-6 rotate-45 bg-red-700 px-6 py-1 text-sm font-semibold text-white shadow drop-shadow-2xl">
-                                Inactive
+                        {(!coursePreview.isActive ||
+                            coursePreview.isDeleted) && (
+                            <div
+                                className={cn(
+                                    'absolute top-3 -right-6 rotate-45 px-6 py-1 text-sm font-semibold text-white shadow drop-shadow-2xl',
+                                    coursePreview.isDeleted
+                                        ? 'bg-purple-700'
+                                        : 'bg-red-700'
+                                )}
+                            >
+                                {coursePreview.isDeleted
+                                    ? 'Deleted'
+                                    : 'Inactive'}
                             </div>
                         )}
                     </AspectRatio>

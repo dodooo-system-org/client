@@ -10,3 +10,9 @@ export const API_ENDPOINTS = {
         PROTECTED: '/course-service/protected/api',
     },
 };
+
+export const REACT_QUERY_KEYS = {
+    ADMIN: {
+        ALL_COURSES: 'all-courses',
+    },
+};

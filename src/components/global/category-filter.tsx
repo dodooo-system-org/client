@@ -26,7 +26,11 @@ export type CategoryFilterRef = {
     getCategory: () => Category | undefined;
 };
 
-export const CategoryFilter = forwardRef(({}, ref) => {
+type CategoryFilterProps = {
+    onSelectedCategory?: (category: Category | undefined) => void;
+};
+
+export const CategoryFilter = forwardRef((props: CategoryFilterProps, ref) => {
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState('');
 
@@ -43,6 +47,18 @@ export const CategoryFilter = forwardRef(({}, ref) => {
     }, [value, categories]);
 
     const triggerRef = useRef<HTMLButtonElement>(null);
+
+    const handleSelectItem = (currentValue: string) => {
+        setValue(currentValue === value ? '' : currentValue);
+        if (props?.onSelectedCategory) {
+            props.onSelectedCategory(
+                currentValue === value
+                    ? undefined
+                    : categories.find(c => c.categoryName === currentValue)
+            );
+        }
+        setOpen(false);
+    };
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -80,14 +96,7 @@ export const CategoryFilter = forwardRef(({}, ref) => {
                                 <CommandItem
                                     key={category.categoryId}
                                     value={category.categoryName}
-                                    onSelect={currentValue => {
-                                        setValue(
-                                            currentValue === value
-                                                ? ''
-                                                : currentValue
-                                        );
-                                        setOpen(false);
-                                    }}
+                                    onSelect={handleSelectItem}
                                 >
                                     {category.categoryName}
                                     <Check

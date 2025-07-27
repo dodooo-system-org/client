@@ -5,4 +5,13 @@ declare module '@/types/apis/request' {
         query?: string;
         orderBy?: string;
     }
+
+    namespace Request {
+        interface AdminGetListCourses extends Pagination {
+            categoryId: string | null;
+            courseLevel: number | null;
+            isActive: boolean | null;
+            isDeleted: boolean | null;
+        }
+    }
 }

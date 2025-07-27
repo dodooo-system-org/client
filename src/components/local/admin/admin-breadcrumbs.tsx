@@ -11,7 +11,7 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
-} from '../ui/breadcrumb';
+} from '../../ui/breadcrumb';
 
 const pathLabels = new Map<string, string>([
     ['/admin', 'Home'],
