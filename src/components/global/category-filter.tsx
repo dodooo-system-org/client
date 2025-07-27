@@ -116,3 +116,5 @@ export const CategoryFilter = forwardRef((props: CategoryFilterProps, ref) => {
         </Popover>
     );
 });
+
+CategoryFilter.displayName = 'CategoryFilter';
