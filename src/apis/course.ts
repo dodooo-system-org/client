@@ -1,4 +1,4 @@
-import { api } from '@/configs/axios-config';
+import { api } from '@/configs/axios.config';
 import { API_ENDPOINTS } from '@/constants';
 import { Request } from '@/types/apis/request';
 import { MetaPagination } from '@/types/apis/response';

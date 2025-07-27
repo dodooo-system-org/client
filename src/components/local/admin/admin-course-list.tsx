@@ -5,10 +5,12 @@ import { CourseCard } from '@/components/global/course-card';
 import { PrimaryPagination } from '@/components/global/paginations/primary-pagination';
 import { CardSkeleton } from '@/components/global/skeletons/card-skeleton';
 import { REACT_QUERY_KEYS } from '@/constants';
+import { handleErrorToast } from '@/lib/utils';
 import { Pagination, Request } from '@/types/apis/request';
 import { CourseStatusType } from '@/types/common';
 import { Category } from '@/types/objects';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import Error from 'next/error';
 import { createContext, useState } from 'react';
 import { AdminCourseListFilter } from './admin-course-list-filter';
 
@@ -61,8 +63,8 @@ export const CourseList = () => {
                     size: paginationState.size,
                 };
                 return await CourseAPI.getListCourses(payload);
-            } catch (error) {
-                console.error('Error fetching courses:', error);
+            } catch (error: unknown) {
+                handleErrorToast(error as Error);
             }
         },
         retry: 2,

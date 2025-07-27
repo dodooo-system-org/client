@@ -1,5 +1,5 @@
-import { ReactQueryProvider } from './react-query-provider';
-import { ThemeProvider } from './theme-provider';
+import { ReactQueryProvider } from './react-query.provider';
+import { ThemeProvider } from './theme.provider';
 
 export const Provider = ({ children }: { children: React.ReactNode }) => {
     return (

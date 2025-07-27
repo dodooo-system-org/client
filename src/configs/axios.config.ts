@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Error from 'next/error';
 
 const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -23,23 +24,23 @@ api.interceptors.response.use(
     response => response,
     error => {
         const status = error.response?.status;
+        console.log(status);
 
-        // Customize based on your API's error structure
-        if (status === 401) {
-            console.error('Unauthorized: Token may be expired or invalid');
-            // Optionally redirect to login
-        } else if (status === 403) {
-            console.error('Forbidden: You do not have permission');
-        } else if (status === 500) {
-            console.error('Server error, please try again later');
+        const controlledErrorStatuses = [400, 401, 403, 404, 409, 500];
+        let handledError: Error;
+        if (controlledErrorStatuses.includes(status)) {
+            handledError = new Error({
+                statusCode: status,
+                title: error.response?.data?.error || 'An error occurred',
+            });
         } else {
-            console.error(
-                'API error:',
-                error.response?.data?.message || error.message
-            );
+            handledError = new Error({
+                statusCode: 500,
+                title: 'An error occurred',
+            });
         }
 
-        return Promise.reject(error);
+        return Promise.reject(handledError);
     }
 );
 

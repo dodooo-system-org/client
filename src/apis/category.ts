@@ -1,4 +1,4 @@
-import { api } from '@/configs/axios-config';
+import { api } from '@/configs/axios.config';
 import { API_ENDPOINTS } from '@/constants';
 import { Category } from '@/types/objects';
 
