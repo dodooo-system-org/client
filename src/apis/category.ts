@@ -12,6 +12,19 @@ class CategoryAPI {
         );
         return response.data;
     }
+    public static async createCategory(
+        category: Pick<
+            Category,
+            'categoryName' | 'categoryDescription' | 'categoryImageUrl'
+        >
+    ) {
+        const response = await api.post<Category>(`${protectedEndpoint}`, {
+            ...category,
+            categoryImageUrl:
+                'https://placehold.co/800x400?font=lato&text=Dodoo+course',
+        });
+        return response.data;
+    }
 }
 
 export { CategoryAPI };

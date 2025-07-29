@@ -19,9 +19,9 @@ export const CourseCard = memo(
                     >
                         <Image
                             src={coursePreview.courseImageUrl || '/800x400.svg'}
-                            loading="lazy"
                             blurDataURL="/800x400.svg"
                             alt="Course Image"
+                            priority={true}
                             width={100}
                             height={200}
                             className="h-full w-full rounded-md object-cover object-center"
