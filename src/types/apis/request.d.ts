@@ -1,3 +1,5 @@
+import { CoursePreview } from '@/types/objects';
+
 declare module '@/types/apis/request' {
     interface Pagination {
         page: number;
@@ -12,6 +14,16 @@ declare module '@/types/apis/request' {
             courseLevel: number | null;
             isActive: boolean | null;
             isDeleted: boolean | null;
+        }
+        interface AdminCreateCourse
+            extends Pick<
+                CoursePreview,
+                | 'courseName'
+                | 'courseDescription'
+                | 'courseImageUrl'
+                | 'courseLevel'
+            > {
+            categoryId: string;
         }
     }
 }

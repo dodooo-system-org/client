@@ -1,5 +1,6 @@
 'use client';
 
+import { CourseLevelSelect } from '@/components/global/course-level-select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -10,9 +11,10 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { CourseStatusType } from '@/types/common';
+import { CoursePreview } from '@/types/objects';
 import { Search } from 'lucide-react';
 import { useContext, useEffect, useId, useState } from 'react';
-import { CategoryFilter } from '../../global/category-filter';
+import { AvailableCategorySelect } from '../../global/available-category-select';
 import { AdminListCourseContext } from './admin-course-list';
 
 export const AdminCourseListFilter = () => {
@@ -48,7 +50,7 @@ export const AdminCourseListFilter = () => {
             </div>
             {/* Category filter */}
             <div className="col-span-10 md:col-span-4 xl:col-span-2">
-                <CategoryFilter
+                <AvailableCategorySelect
                     onSelectedCategory={category =>
                         setFilter(prev => ({
                             ...prev,
@@ -59,22 +61,17 @@ export const AdminCourseListFilter = () => {
             </div>
             {/* Course level filter */}
             <div className="col-span-5 md:col-span-3 xl:col-span-2">
-                <Select
-                    value={filter.level?.toString()}
-                    onValueChange={level =>
-                        setFilter(prev => ({ ...prev, level: Number(level) }))
+                <CourseLevelSelect
+                    value={
+                        filter.level as Pick<
+                            CoursePreview,
+                            'courseLevel'
+                        >['courseLevel']
                     }
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select level..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="0">Beginner</SelectItem>
-                        <SelectItem value="1">Intermediate</SelectItem>
-                        <SelectItem value="2">Advanced</SelectItem>
-                        <SelectItem value="3">Expert</SelectItem>
-                    </SelectContent>
-                </Select>
+                    onValueChange={level =>
+                        setFilter(prev => ({ ...prev, level }))
+                    }
+                />
             </div>
             {/* Course status filter */}
             <div className="col-span-5 md:col-span-3 xl:col-span-2">

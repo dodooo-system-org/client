@@ -17,34 +17,27 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
+import { REACT_QUERY_KEYS } from '@/constants';
 import { cn } from '@/lib/utils';
 import { Category } from '@/types/objects';
 import { useQuery } from '@tanstack/react-query';
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-
-export type CategoryFilterRef = {
-    getCategory: () => Category | undefined;
-};
+import { memo, useRef, useState } from 'react';
 
 type CategoryFilterProps = {
+    initValue?: Category | undefined;
     onSelectedCategory?: (category: Category | undefined) => void;
+    isError?: boolean;
 };
 
-export const CategoryFilter = forwardRef((props: CategoryFilterProps, ref) => {
+export const AvailableCategorySelect = memo((props: CategoryFilterProps) => {
     const [open, setOpen] = useState(false);
-    const [value, setValue] = useState('');
+    const [value, setValue] = useState(props.initValue?.categoryName || '');
 
     const { data: categories = [] } = useQuery({
-        queryKey: ['all-categories'],
+        queryKey: [REACT_QUERY_KEYS.ADMIN.AVAILABLE_CATEGORIES],
         queryFn: CategoryAPI.getListAvailableCategories,
         retry: 1,
     });
-
-    useImperativeHandle(ref, (): CategoryFilterRef => {
-        return {
-            getCategory: () => categories.find(c => c.categoryName === value),
-        };
-    }, [value, categories]);
 
     const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -67,11 +60,16 @@ export const CategoryFilter = forwardRef((props: CategoryFilterProps, ref) => {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between"
+                    className={cn(
+                        'w-full justify-between',
+                        props.isError
+                            ? 'border-red-600 hover:border-red-600'
+                            : ''
+                    )}
                     ref={triggerRef}
                 >
                     {value ? (
-                        value
+                        <span className="line-clamp-1">{value}</span>
                     ) : (
                         <span className="text-muted-foreground font-normal">
                             Select category...
@@ -117,4 +115,4 @@ export const CategoryFilter = forwardRef((props: CategoryFilterProps, ref) => {
     );
 });
 
-CategoryFilter.displayName = 'CategoryFilter';
+AvailableCategorySelect.displayName = 'AvailableCategorySelect';

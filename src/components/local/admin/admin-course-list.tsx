@@ -27,6 +27,7 @@ type FilterState = {
 type AdminCourseListContextType = {
     filter: FilterState;
     setFilter: React.Dispatch<React.SetStateAction<FilterState>>;
+    refreshListCourse: () => void;
 };
 export const CourseList = () => {
     const [filter, setFilter] = useState<FilterState>({
@@ -41,7 +42,7 @@ export const CourseList = () => {
         size: 10,
     });
 
-    const { data, isFetching } = useQuery({
+    const { data, isFetching, refetch } = useQuery({
         queryKey: [REACT_QUERY_KEYS.ADMIN.ALL_COURSES, filter, pagination],
         queryFn: async ({ queryKey }) => {
             try {
@@ -71,7 +72,9 @@ export const CourseList = () => {
         placeholderData: keepPreviousData,
     });
     return (
-        <AdminListCourseContext.Provider value={{ filter, setFilter }}>
+        <AdminListCourseContext.Provider
+            value={{ filter, setFilter, refreshListCourse: refetch }}
+        >
             <div className="space-y-8">
                 <AdminCourseListFilter />
                 <PrimaryPagination

@@ -28,7 +28,6 @@ export const CategoryEditForm = memo(
 
         useEffect(() => {
             onValueChange?.(category);
-            console.log(category);
         }, [category, onValueChange]); // Update when category changes
 
         const handleChangeImage = (imageSrc: string) => {

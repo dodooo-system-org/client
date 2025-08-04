@@ -10,4 +10,9 @@ declare module '@/types/common' {
         onUpdate?: (category: string) => void;
         onCancel?: () => void;
     };
+
+    type FormAction = {
+        submit: () => void;
+        reset: () => void;
+    };
 }

@@ -19,6 +19,17 @@ class CourseAPI {
         );
         return response.data;
     }
+
+    public static async createCourse(
+        requestPayload: Request.AdminCreateCourse
+    ) {
+        const response = await api.post<CoursePreview>(protectedEndpoint, {
+            ...requestPayload,
+            courseImageUrl:
+                'https://placehold.co/800x400?font=lato&text=Dodoo+course',
+        });
+        return response.data;
+    }
 }
 
 export { CourseAPI };

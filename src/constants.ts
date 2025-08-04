@@ -14,5 +14,12 @@ export const API_ENDPOINTS = {
 export const REACT_QUERY_KEYS = {
     ADMIN: {
         ALL_COURSES: 'all-courses',
+        AVAILABLE_CATEGORIES: 'available-categories',
     },
+};
+
+export const DEFAULT_FUNCTION = () => {
+    console.warn(
+        'Default function called, please provide a specific implementation.'
+    );
 };

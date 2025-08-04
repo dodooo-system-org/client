@@ -19,7 +19,7 @@ declare module '@/types/objects' {
         courseName: string;
         courseDescription: string;
         courseImageUrl: string;
-        courseLevel: 0 | 1 | 2; // 0: Beginner, 1: Intermediate, 2: Advanced
+        courseLevel: 0 | 1 | 2 | 4; // 0: Beginner, 1: Intermediate, 2: Advanced, 4: Expert
         courseDuration: number; // e.g., 120 // in minutes
         category: Category;
         moduleCount: number; // e.g., 10
