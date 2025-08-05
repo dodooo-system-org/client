@@ -1,5 +1,5 @@
 import { memo, ReactNode } from 'react';
-import { FieldError } from 'react-hook-form';
+import { FieldError, FieldErrorsImpl, Merge } from 'react-hook-form';
 import { Label } from '../ui/label';
 
 export const FormField = memo(
@@ -11,7 +11,7 @@ export const FormField = memo(
     }: {
         label: string;
         htmlFor?: string;
-        error?: FieldError;
+        error?: FieldError | Merge<FieldError, FieldErrorsImpl<object>>;
         children: ReactNode;
     }) => (
         <div>

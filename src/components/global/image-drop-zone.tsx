@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils';
 import { ImageUp } from 'lucide-react';
 import Image from 'next/image';
-import { Fragment, memo, useRef, useState } from 'react';
+import { Fragment, memo, useEffect, useRef, useState } from 'react';
 import { AspectRatio } from '../ui/aspect-ratio';
 import { Input } from '../ui/input';
 
@@ -26,6 +26,14 @@ export const ImageDropZone = memo(
         );
 
         const inputFileRef = useRef<HTMLInputElement>(null);
+
+        // Reset the file input when initialImageSrc becomes empty/undefined
+        useEffect(() => {
+            if (!initialImageSrc && inputFileRef.current) {
+                inputFileRef.current.value = '';
+            }
+            setImageSrc(initialImageSrc || null);
+        }, [initialImageSrc]);
 
         const handleOpenFileDialog = () => {
             inputFileRef.current?.click();

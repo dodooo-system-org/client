@@ -29,7 +29,7 @@ export const AdminCourseListFilter = () => {
         }, 700); // Debounce for 700ms
 
         return () => clearTimeout(handler);
-    }, [search]);
+    }, [search, setFilter]);
 
     return (
         <div className="grid grid-cols-10 gap-2 xl:grid-cols-12">

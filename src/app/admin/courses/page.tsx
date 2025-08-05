@@ -1,10 +1,17 @@
+'use client';
+
 import { CategoryCreateDialog } from '@/components/global/category/category-create-dialog';
 import { CourseCreateDialog } from '@/components/global/course/course-create-dialog';
 import { CourseList } from '@/components/local/admin/admin-course-list';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { useState } from 'react';
 
 export default function AdminCoursesPage() {
+    const [showDialog, setShowDialog] = useState({
+        createCourse: false,
+        createCategory: false,
+    });
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -14,6 +21,13 @@ export default function AdminCoursesPage() {
                 </div>
                 <div className="flex flex-col items-end gap-2">
                     <CourseCreateDialog
+                        isOpen={showDialog.createCourse}
+                        onOpenChange={open =>
+                            setShowDialog(prev => ({
+                                ...prev,
+                                createCourse: open,
+                            }))
+                        }
                         triggerNode={
                             <Button>
                                 <Plus />
@@ -22,6 +36,13 @@ export default function AdminCoursesPage() {
                         }
                     />
                     <CategoryCreateDialog
+                        isOpen={showDialog.createCategory}
+                        onOpenChange={open =>
+                            setShowDialog(prev => ({
+                                ...prev,
+                                createCategory: open,
+                            }))
+                        }
                         triggerNode={
                             <Button variant="outline" size="sm">
                                 New category

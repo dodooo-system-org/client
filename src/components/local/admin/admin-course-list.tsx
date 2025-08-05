@@ -49,6 +49,7 @@ export const CourseList = () => {
                 const filterState = queryKey[1] as FilterState;
                 const paginationState = queryKey[2] as Pagination;
                 const payload: Request.AdminGetListCourses = {
+                    query: filterState.query.trim(),
                     categoryId:
                         filterState.category &&
                         filterState.category?.categoryId,
@@ -71,6 +72,7 @@ export const CourseList = () => {
         retry: 2,
         placeholderData: keepPreviousData,
     });
+
     return (
         <AdminListCourseContext.Provider
             value={{ filter, setFilter, refreshListCourse: refetch }}

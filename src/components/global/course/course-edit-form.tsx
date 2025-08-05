@@ -3,13 +3,12 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DEFAULT_FUNCTION } from '@/constants';
-import { cn } from '@/lib/utils';
 import { createCormSchema } from '@/lib/validation-schemas';
 import { FormAction } from '@/types/common';
 import { Category, CoursePreview } from '@/types/objects';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { forwardRef, memo, useImperativeHandle } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { AvailableCategorySelect } from '../available-category-select';
 import { CourseLevelSelect } from '../course-level-select';
@@ -18,30 +17,23 @@ import { ImageDropZone } from '../image-drop-zone';
 
 type CourseFormData = Pick<
     CoursePreview,
-    | 'courseName'
-    | 'courseDescription'
-    | 'courseImageUrl'
-    | 'category'
-    | 'courseLevel'
->;
+    'courseName' | 'courseDescription' | 'courseImageUrl' | 'courseLevel'
+> & {
+    category: Category | undefined;
+};
 
 type CourseEditFormProps = {
-    initialCourse?: Partial<CourseFormData>;
+    initialCourse?: CourseFormData;
     onValueChange?: (course: Partial<CourseFormData>) => void;
     onSubmit?: (values: z.infer<typeof createCormSchema>) => void;
 };
-
 const defaultValues = {
     courseName: '',
     courseDescription: '',
     courseImageUrl: '',
-    category: {
-        categoryId: '',
-        categoryName: '',
-    },
+    category: undefined,
     courseLevel: 0,
 } as CourseFormData;
-
 export const CourseEditForm = memo(
     forwardRef<FormAction, CourseEditFormProps>(
         (
@@ -49,13 +41,12 @@ export const CourseEditForm = memo(
             ref
         ) => {
             const {
+                control,
                 register,
                 handleSubmit,
                 reset,
-                setValue,
                 formState: { errors },
-                watch,
-            } = useForm<z.infer<typeof createCormSchema>>({
+            } = useForm({
                 resolver: zodResolver(createCormSchema),
                 defaultValues: initialCourse,
             });
@@ -68,95 +59,74 @@ export const CourseEditForm = memo(
                 })
             );
 
-            const watchedValues = {
-                courseImageUrl: watch('courseImageUrl'),
-                courseLevel: watch('courseLevel') as Pick<
-                    CoursePreview,
-                    'courseLevel'
-                >['courseLevel'],
-                category: watch('category') as Category,
-            };
-
             return (
-                <form
-                    className="flex flex-col gap-4"
-                    onSubmit={handleSubmit(onSubmit)}
-                >
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
-                        label="Course Image Url"
+                        label="Course Image"
                         error={errors.courseImageUrl}
                     >
-                        <ImageDropZone
-                            ratio={16 / 8}
-                            initialImageSrc={watchedValues.courseImageUrl}
-                            onImageDrop={(imageUrl: string) =>
-                                setValue('courseImageUrl', imageUrl)
-                            }
-                            isErrored={!!errors.courseImageUrl}
+                        <Controller
+                            name="courseImageUrl"
+                            control={control}
+                            render={({ field }) => (
+                                <ImageDropZone
+                                    ratio={19 / 8}
+                                    initialImageSrc={field.value}
+                                    onImageDrop={field.onChange}
+                                    isErrored={!!errors?.courseImageUrl}
+                                />
+                            )}
                         />
                     </FormField>
 
-                    <FormField
-                        label="Course Name"
-                        htmlFor="courseName"
-                        error={errors.courseName}
-                    >
+                    <FormField label="Course Name" error={errors.courseName}>
                         <Input
                             type="text"
-                            placeholder="Enter course name"
                             {...register('courseName')}
-                            className={cn(
-                                errors.courseName && 'border-red-600'
-                            )}
+                            placeholder="Enter course name"
                         />
                     </FormField>
 
                     <FormField
                         label="Course Description"
-                        htmlFor="courseDescription"
                         error={errors.courseDescription}
                     >
                         <Textarea
                             placeholder="Enter course description"
                             {...register('courseDescription')}
-                            className={cn(
-                                'h-32',
-                                errors.courseDescription && 'border-red-600'
+                            className="h-40"
+                        />
+                    </FormField>
+
+                    <FormField label="Course Level" error={errors.courseLevel}>
+                        <Controller
+                            name="courseLevel"
+                            control={control}
+                            render={({ field }) => (
+                                <CourseLevelSelect
+                                    value={
+                                        field.value as Pick<
+                                            CoursePreview,
+                                            'courseLevel'
+                                        >['courseLevel']
+                                    }
+                                    onValueChange={field.onChange}
+                                />
                             )}
                         />
                     </FormField>
 
-                    <FormField
-                        label="Course Level"
-                        htmlFor="courseLevel"
-                        error={errors.courseLevel}
-                    >
-                        <CourseLevelSelect
-                            value={watchedValues.courseLevel}
-                            onValueChange={(value: number) =>
-                                setValue('courseLevel', value)
-                            }
-                        />
-                    </FormField>
-
-                    <FormField
-                        label="Category"
-                        htmlFor="category"
-                        error={errors.category?.categoryId}
-                    >
-                        <AvailableCategorySelect
-                            initValue={watchedValues.category as Category}
-                            isError={!!errors.category?.categoryId}
-                            onSelectedCategory={(
-                                category: Category | undefined
-                            ) => {
-                                if (category) {
-                                    setValue('category', {
-                                        categoryId: category.categoryId,
-                                        categoryName: category.categoryName,
-                                    });
-                                }
-                            }}
+                    <FormField label="Category" error={errors?.category}>
+                        <Controller
+                            name="category"
+                            control={control}
+                            render={({ field }) => (
+                                <AvailableCategorySelect
+                                    initValue={field.value as Category}
+                                    onSelectedCategory={field.onChange}
+                                    isError={!!errors?.category}
+                                />
+                            )}
                         />
                     </FormField>
                 </form>

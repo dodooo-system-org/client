@@ -4,17 +4,22 @@ import { CategoryAPI } from '@/apis/category';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
-    DialogClose,
     DialogContent,
+    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
-import { CustomizedDialogProps } from '@/types/common';
+import { handleErrorToast } from '@/lib/utils';
+import { createCategorySchema } from '@/lib/validation-schemas';
+import { CustomizedDialogProps, FormAction } from '@/types/common';
 import { Category } from '@/types/objects';
-import { DialogDescription } from '@radix-ui/react-dialog';
-import { useCallback, useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import Error from 'next/error';
+import { memo, useRef } from 'react';
+import { toast } from 'react-toastify';
+import z from 'zod';
 import { CategoryEditForm } from './category-edit-form';
 
 type CategoryCreateDialogProps = Pick<
@@ -22,82 +27,86 @@ type CategoryCreateDialogProps = Pick<
     'isOpen' | 'onOpenChange' | 'triggerNode'
 >;
 
-export const CategoryCreateDialog = ({
-    isOpen,
-    onOpenChange,
-    triggerNode,
-}: CategoryCreateDialogProps) => {
-    const [category, setCategory] = useState<
-        Pick<
-            Category,
-            'categoryName' | 'categoryDescription' | 'categoryImageUrl'
-        >
-    >({
-        categoryName: '',
-        categoryDescription: '',
-        categoryImageUrl: '',
-    });
+export const CategoryCreateDialog = memo(
+    ({ isOpen, onOpenChange, triggerNode }: CategoryCreateDialogProps) => {
+        const formRef = useRef<FormAction>(null);
+        const toastRef = useRef<ReturnType<typeof toast.loading>>(null);
 
-    const handleSubmit = useCallback(
-        (
-            newCategory: Pick<
-                Category,
-                'categoryName' | 'categoryDescription' | 'categoryImageUrl'
-            >
-        ) => {
-            CategoryAPI.createCategory(newCategory);
-            onOpenChange?.(false);
-        },
-        [onOpenChange]
-    );
-    const handleReset = useCallback(() => {
-        setCategory({
-            categoryName: '',
-            categoryDescription: '',
-            categoryImageUrl: '',
+        const createCategoryMutation = useMutation({
+            mutationFn: async (
+                data: Pick<
+                    Category,
+                    'categoryName' | 'categoryDescription' | 'categoryImageUrl'
+                >
+            ) => {
+                toastRef.current = toast.loading('Creating category...');
+
+                return await CategoryAPI.createCategory({
+                    categoryName: data.categoryName,
+                    categoryDescription: data.categoryDescription,
+                    categoryImageUrl: data.categoryImageUrl,
+                });
+            },
+            onSuccess: () => {
+                onOpenChange?.(false);
+                toast.dismiss(toastRef.current?.toString());
+                toast.success('Category created successfully!');
+            },
+            onError: (error: Error) => {
+                toast.dismiss(toastRef.current?.toString());
+                handleErrorToast(error);
+            },
+            onSettled: () => {
+                formRef.current?.reset();
+            },
         });
-        onOpenChange?.(false);
-    }, [onOpenChange]);
-    return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            {triggerNode && (
-                <DialogTrigger asChild>{triggerNode}</DialogTrigger>
-            )}
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Create new category</DialogTitle>
-                    <DialogDescription>
-                        Use this dialog to create a new category for your
-                        courses. Fill in the necessary details and click
-                        &apos;Create&apos; to save.
-                    </DialogDescription>
-                </DialogHeader>
-                <div>
-                    <CategoryEditForm
-                        onSubmit={handleSubmit}
-                        onValueChange={setCategory}
-                    />
-                </div>
-                <DialogFooter>
-                    <DialogClose asChild>
+
+        const onSubmit = (data: z.infer<typeof createCategorySchema>) => {
+            createCategoryMutation.mutate({
+                categoryName: data.categoryName,
+                categoryDescription: data.categoryDescription,
+                categoryImageUrl: data.categoryImageUrl,
+            });
+        };
+
+        return (
+            <Dialog open={isOpen} onOpenChange={onOpenChange}>
+                {triggerNode && (
+                    <DialogTrigger asChild>{triggerNode}</DialogTrigger>
+                )}
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Create new category</DialogTitle>
+                        <DialogDescription>
+                            Use this dialog to create a new category for your
+                            courses. Fill in the necessary details and click
+                            &apos;Create&apos; to save.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <CategoryEditForm onSubmit={onSubmit} ref={formRef} />
+                    <DialogFooter>
                         <Button
                             type="reset"
                             variant="secondary"
-                            onClick={handleReset}
+                            onClick={() => {
+                                formRef.current?.reset();
+                            }}
                         >
-                            Cancel
+                            Reset
                         </Button>
-                    </DialogClose>
-                    <DialogClose asChild>
                         <Button
                             type="submit"
-                            onClick={() => handleSubmit(category)}
+                            onClick={() => {
+                                formRef.current?.submit();
+                            }}
                         >
                             Submit
                         </Button>
-                    </DialogClose>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
-};
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        );
+    }
+);
+
+CategoryCreateDialog.displayName = 'CategoryCreateDialog';

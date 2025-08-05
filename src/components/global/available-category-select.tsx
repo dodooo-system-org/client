@@ -21,7 +21,7 @@ import { REACT_QUERY_KEYS } from '@/constants';
 import { cn } from '@/lib/utils';
 import { Category } from '@/types/objects';
 import { useQuery } from '@tanstack/react-query';
-import { memo, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 
 type CategoryFilterProps = {
     initValue?: Category | undefined;
@@ -40,6 +40,11 @@ export const AvailableCategorySelect = memo((props: CategoryFilterProps) => {
     });
 
     const triggerRef = useRef<HTMLButtonElement>(null);
+
+    // Reset value when categories change or initValue changes
+    useEffect(() => {
+        setValue(props.initValue?.categoryName || '');
+    }, [props.initValue?.categoryName]);
 
     const handleSelectItem = (currentValue: string) => {
         setValue(currentValue === value ? '' : currentValue);
