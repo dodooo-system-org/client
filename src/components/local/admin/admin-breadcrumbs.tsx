@@ -16,6 +16,7 @@ import {
 const pathLabels = new Map<string, string>([
     ['/admin', 'Home'],
     ['/admin/courses', 'All Courses'],
+    ['/admin/categories', 'All Categories'],
 ]);
 
 type BreadcrumbItemType = {

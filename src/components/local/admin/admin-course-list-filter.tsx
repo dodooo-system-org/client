@@ -1,16 +1,10 @@
 'use client';
 
 import { CourseLevelSelect } from '@/components/global/course-level-select';
+import { StatusSelect } from '@/components/global/status-select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
-import { CourseStatusType } from '@/types/common';
+import { StatusType } from '@/types/common';
 import { CoursePreview } from '@/types/objects';
 import { Search } from 'lucide-react';
 import { useContext, useEffect, useId, useState } from 'react';
@@ -75,24 +69,12 @@ export const AdminCourseListFilter = () => {
             </div>
             {/* Course status filter */}
             <div className="col-span-5 md:col-span-3 xl:col-span-2">
-                <Select
-                    value={filter.status?.toString()}
+                <StatusSelect
+                    value={filter.status as StatusType | null}
                     onValueChange={status =>
-                        setFilter(prev => ({
-                            ...prev,
-                            status: status as CourseStatusType | null,
-                        }))
+                        setFilter(prev => ({ ...prev, status }))
                     }
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select status..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="active">Active</SelectItem>
-                        <SelectItem value="inactive">Inactive</SelectItem>
-                        <SelectItem value="deleted">Deleted</SelectItem>
-                    </SelectContent>
-                </Select>
+                />
             </div>
         </div>
     );

@@ -7,7 +7,7 @@ import { CardSkeleton } from '@/components/global/skeletons/card-skeleton';
 import { REACT_QUERY_KEYS } from '@/constants';
 import { handleErrorToast } from '@/lib/utils';
 import { Pagination, Request } from '@/types/apis/request';
-import { CourseStatusType } from '@/types/common';
+import { StatusType } from '@/types/common';
 import { Category } from '@/types/objects';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import Error from 'next/error';
@@ -21,7 +21,7 @@ type FilterState = {
     query: string;
     category: Category | null;
     level: number | null;
-    status: CourseStatusType | null;
+    status: StatusType | null;
 };
 
 type AdminCourseListContextType = {

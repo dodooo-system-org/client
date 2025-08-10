@@ -25,5 +25,9 @@ declare module '@/types/apis/request' {
             > {
             categoryId: string;
         }
+        interface AdminGetListCategories extends Pagination {
+            isActive: boolean | null;
+            isDeleted: boolean | null;
+        }
     }
 }

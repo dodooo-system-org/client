@@ -12,7 +12,14 @@ import {
     SidebarMenuItem,
     SidebarRail,
 } from '@/components/ui/sidebar';
-import { Home, Library, LogOut, LucideProps, Users } from 'lucide-react';
+import {
+    ChartBarStacked,
+    Home,
+    Library,
+    LogOut,
+    LucideProps,
+    Users,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
@@ -47,7 +54,7 @@ const data: DataType = {
             ],
         },
         {
-            title: 'Course Management',
+            title: 'Courses Management',
             url: '#',
             icon: Library,
             items: [
@@ -62,7 +69,7 @@ const data: DataType = {
             ],
         },
         {
-            title: 'User Management',
+            title: 'Users Management',
             url: '#',
             icon: Users,
             items: [
@@ -72,6 +79,21 @@ const data: DataType = {
                 },
                 {
                     title: 'Potential Users',
+                    url: '#',
+                },
+            ],
+        },
+        {
+            title: 'Categories Management',
+            url: '#',
+            icon: ChartBarStacked,
+            items: [
+                {
+                    title: 'All Categories',
+                    url: '/admin/categories',
+                },
+                {
+                    title: 'Deleted Categories',
                     url: '#',
                 },
             ],

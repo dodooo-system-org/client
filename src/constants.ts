@@ -15,6 +15,7 @@ export const REACT_QUERY_KEYS = {
     ADMIN: {
         ALL_COURSES: 'all-courses',
         AVAILABLE_CATEGORIES: 'available-categories',
+        ALL_CATEGORIES: 'all-categories',
     },
 };
 

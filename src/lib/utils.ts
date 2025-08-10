@@ -28,6 +28,15 @@ export function getPageNumbers(meta: Meta) {
     return rangeWithDots;
 }
 
+export function formatDate(
+    date: Date | string | number,
+    style: 'long' | 'full' | 'medium' | 'short' = 'long'
+) {
+    return Intl.DateTimeFormat('en-US', {
+        dateStyle: style,
+    }).format(new Date(date || Date.now()));
+}
+
 export function handleErrorToast(error: Error) {
     if (error.props.statusCode > 300 && error.props.statusCode < 400) {
         toast.warning(error.props.title);

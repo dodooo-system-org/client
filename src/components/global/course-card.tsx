@@ -2,7 +2,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { cn } from '@/lib/utils';
+import { cn, formatDate } from '@/lib/utils';
 import { CoursePreview } from '@/types/objects';
 import { Calendar, Package, Presentation } from 'lucide-react';
 import Image from 'next/image';
@@ -77,11 +77,7 @@ export const CourseCard = memo(
                         <p className="flex items-center gap-1 text-sm">
                             <Calendar className="h-4 w-4" />
                             Created on&nbsp;
-                            {Intl.DateTimeFormat('en-US', {
-                                dateStyle: 'long',
-                            }).format(
-                                new Date(coursePreview.createdAt || Date.now())
-                            )}
+                            {formatDate(coursePreview.createdAt)}
                         </p>
                     </div>
                 </CardContent>

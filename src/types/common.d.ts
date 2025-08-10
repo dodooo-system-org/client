@@ -1,5 +1,5 @@
 declare module '@/types/common' {
-    type CourseStatusType = 'active' | 'inactive' | 'deleted';
+    type StatusType = 'active' | 'inactive' | 'deleted';
 
     type CustomizedDialogProps = {
         isOpen?: boolean;
