@@ -2,6 +2,7 @@
 
 import { CourseLevelSelect } from '@/components/global/course-level-select';
 import { StatusSelect } from '@/components/global/status-select';
+import { AdminListCourseContext } from '@/components/providers/course-management.provider';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { StatusType } from '@/types/common';
@@ -9,7 +10,6 @@ import { CoursePreview } from '@/types/objects';
 import { Search } from 'lucide-react';
 import { useContext, useEffect, useId, useState } from 'react';
 import { AvailableCategorySelect } from '../../global/available-category-select';
-import { AdminListCourseContext } from './admin-course-list';
 
 export const AdminCourseListFilter = () => {
     const { filter, setFilter } = useContext(AdminListCourseContext);

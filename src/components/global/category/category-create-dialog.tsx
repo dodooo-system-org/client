@@ -1,6 +1,7 @@
 'use client';
 
 import { CategoryAPI } from '@/apis/category';
+import { AdminCategoryListContext } from '@/components/providers/category-management.provider';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -17,7 +18,7 @@ import { CustomizedDialogProps, FormAction } from '@/types/common';
 import { Category } from '@/types/objects';
 import { useMutation } from '@tanstack/react-query';
 import Error from 'next/error';
-import { memo, useRef } from 'react';
+import { memo, useContext, useRef } from 'react';
 import { toast } from 'react-toastify';
 import z from 'zod';
 import { CategoryEditForm } from './category-edit-form';
@@ -29,6 +30,10 @@ type CategoryCreateDialogProps = Pick<
 
 export const CategoryCreateDialog = memo(
     ({ isOpen, onOpenChange, triggerNode }: CategoryCreateDialogProps) => {
+        const { refetch: refetchCategoryList } = useContext(
+            AdminCategoryListContext
+        );
+
         const formRef = useRef<FormAction>(null);
         const toastRef = useRef<ReturnType<typeof toast.loading>>(null);
 
@@ -51,6 +56,7 @@ export const CategoryCreateDialog = memo(
                 onOpenChange?.(false);
                 toast.dismiss(toastRef.current?.toString());
                 toast.success('Category created successfully!');
+                refetchCategoryList();
             },
             onError: (error: Error) => {
                 toast.dismiss(toastRef.current?.toString());
