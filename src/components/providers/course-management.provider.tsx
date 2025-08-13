@@ -1,6 +1,6 @@
 'use client';
 
-import { CourseAPI } from '@/apis/course';
+import { courseAPI } from '@/apis/course';
 import { REACT_QUERY_KEYS } from '@/constants';
 import { handleErrorToast } from '@/lib/utils';
 import { Pagination, Request } from '@/types/apis/request';
@@ -9,6 +9,7 @@ import { StatusType } from '@/types/common';
 import { Category, CoursePreview } from '@/types/objects';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import Error from 'next/error';
+import { usePathname } from 'next/navigation';
 import React, { createContext, useState } from 'react';
 
 type FilterState = Pagination & {
@@ -36,6 +37,8 @@ export const CourseManagementProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
+    const pathname = usePathname();
+
     const [filter, setFilter] = useState<FilterState>({
         query: '',
         category: null,
@@ -66,13 +69,14 @@ export const CourseManagementProvider = ({
                     page: filterState.page,
                     size: filterState.size,
                 };
-                return await CourseAPI.getListCourses(payload);
+                return await courseAPI.getListCourses(payload);
             } catch (error: unknown) {
                 handleErrorToast(error as Error);
             }
         },
         retry: 2,
         placeholderData: keepPreviousData,
+        enabled: pathname.startsWith('/admin/courses'),
     });
 
     return (

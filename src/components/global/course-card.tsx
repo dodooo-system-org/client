@@ -22,7 +22,7 @@ export const CourseCard = memo(
                             blurDataURL="/800x400.svg"
                             alt="Course Image"
                             priority={true}
-                            width={100}
+                            width={400}
                             height={200}
                             className="h-full w-full rounded-md object-cover object-center"
                         />
