@@ -1,6 +1,6 @@
 'use client';
 
-import { CategoryAPI } from '@/apis/category';
+import { categoryAPI } from '@/apis/category';
 import { AdminCategoryListContext } from '@/components/providers/category-management.provider';
 import { Button } from '@/components/ui/button';
 import {
@@ -46,7 +46,7 @@ export const CategoryCreateDialog = memo(
             ) => {
                 toastRef.current = toast.loading('Creating category...');
 
-                return await CategoryAPI.createCategory({
+                return await categoryAPI.createCategory({
                     categoryName: data.categoryName,
                     categoryDescription: data.categoryDescription,
                     categoryImageUrl: data.categoryImageUrl,

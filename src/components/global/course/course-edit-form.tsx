@@ -1,5 +1,6 @@
 'use client';
 
+import { courseAPI } from '@/apis/course';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DEFAULT_FUNCTION } from '@/constants';
@@ -70,9 +71,10 @@ export const CourseEditForm = memo(
                             control={control}
                             render={({ field }) => (
                                 <ImageDropZone
-                                    ratio={19 / 8}
+                                    ratio={16 / 8}
                                     initialImageSrc={field.value}
                                     onImageDrop={field.onChange}
+                                    onUploadUrl={courseAPI.uploadImage}
                                     isErrored={!!errors?.courseImageUrl}
                                 />
                             )}

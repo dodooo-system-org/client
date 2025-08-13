@@ -1,6 +1,6 @@
 'use client';
 
-import { CategoryAPI } from '@/apis/category';
+import { categoryAPI } from '@/apis/category';
 import { REACT_QUERY_KEYS } from '@/constants';
 import { handleErrorToast } from '@/lib/utils';
 import { Pagination, Request } from '@/types/apis/request';
@@ -9,6 +9,7 @@ import { StatusType } from '@/types/common';
 import { Category } from '@/types/objects';
 import { useQuery } from '@tanstack/react-query';
 import Error from 'next/error';
+import { usePathname } from 'next/navigation';
 import { createContext, useState } from 'react';
 
 type FilterState = Pagination & {
@@ -35,9 +36,11 @@ export const AdminCategoryListProvider = ({
 }: {
     children: React.ReactNode;
 }) => {
+    const pathname = usePathname();
     const [filter, setFilter] = useState<FilterState>({
         page: 1,
         size: 10,
+        query: '',
     });
 
     const { data, refetch, isFetching } = useQuery({
@@ -57,11 +60,12 @@ export const AdminCategoryListProvider = ({
                     page: filterState.page,
                     size: filterState.size,
                 };
-                return CategoryAPI.getListCategories(payload);
+                return categoryAPI.getListCategories(payload);
             } catch (error: unknown) {
                 handleErrorToast(error as Error);
             }
         },
+        enabled: !!pathname && pathname === '/admin/categories', // Only run query if pathname is defined
     });
     return (
         <AdminCategoryListContext.Provider
@@ -78,4 +82,3 @@ export const AdminCategoryListProvider = ({
         </AdminCategoryListContext.Provider>
     );
 };
-1;

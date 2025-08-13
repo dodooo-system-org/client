@@ -4,20 +4,23 @@ import { cn } from '@/lib/utils';
 import { ImageUp } from 'lucide-react';
 import Image from 'next/image';
 import { Fragment, memo, useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import { AspectRatio } from '../ui/aspect-ratio';
 import { Input } from '../ui/input';
 
 type ImageDropZoneProps = {
     initialImageSrc?: string;
     onImageDrop?: (imageSrc: string) => void;
+    onUploadUrl?: (file: File) => Promise<string>;
     ratio: number;
     isErrored?: boolean;
 };
 
 export const ImageDropZone = memo(
     ({
-        ratio,
+        ratio = 16 / 8,
         onImageDrop,
+        onUploadUrl,
         initialImageSrc,
         isErrored,
     }: ImageDropZoneProps) => {
@@ -39,20 +42,44 @@ export const ImageDropZone = memo(
             inputFileRef.current?.click();
         };
 
-        const handleImageProcessing = (file: File) => {
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    if (onImageDrop) {
-                        onImageDrop(reader.result as string);
+        const handleImageProcessing = async (file: File) => {
+            const toastId = toast.loading('Processing image...');
+            try {
+                if (file && file.type.startsWith('image/')) {
+                    if (onUploadUrl) {
+                        const uploadUrl = await onUploadUrl(file);
+                        setImageSrc(uploadUrl);
+                        onImageDrop?.(uploadUrl);
+                    } else {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            if (onImageDrop) {
+                                onImageDrop(reader.result as string);
+                            }
+                            setImageSrc(reader.result as string);
+                        };
+                        reader.readAsDataURL(file);
                     }
-                    setImageSrc(reader.result as string);
-                };
-                reader.readAsDataURL(file);
+                }
+                toast.update(toastId, {
+                    render: 'Image processed successfully',
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: 2000,
+                });
+            } catch {
+                toast.update(toastId, {
+                    render: 'Failed to process image',
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: 2000,
+                });
+                setImageSrc(initialImageSrc || null);
+                onImageDrop?.('');
             }
         };
 
-        const handleFileChange = (
+        const handleFileChange = async (
             event: React.ChangeEvent<HTMLInputElement>
         ) => {
             const file = event.target.files?.[0];
@@ -71,7 +98,7 @@ export const ImageDropZone = memo(
         };
         return (
             <AspectRatio
-                ratio={16 / 8}
+                ratio={ratio}
                 role="img"
                 onClick={handleOpenFileDialog}
                 style={
@@ -95,8 +122,8 @@ export const ImageDropZone = memo(
                         src={imageSrc}
                         alt="Uploaded"
                         className="mt-2 h-full w-full rounded-lg border object-cover object-center"
-                        height={ratio * 100}
-                        width={100}
+                        height={100}
+                        width={ratio * 100}
                     />
                 ) : (
                     <Fragment>

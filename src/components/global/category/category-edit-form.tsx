@@ -1,5 +1,6 @@
 'use client';
 
+import { categoryAPI } from '@/apis/category';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { DEFAULT_FUNCTION } from '@/constants';
@@ -69,6 +70,7 @@ export const CategoryEditForm = memo(
                                     ratio={16 / 8}
                                     initialImageSrc={field.value}
                                     onImageDrop={field.onChange}
+                                    onUploadUrl={categoryAPI.uploadImage}
                                     isErrored={!!errors?.categoryImageUrl}
                                 />
                             )}

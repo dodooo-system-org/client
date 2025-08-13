@@ -14,7 +14,6 @@ import {
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCellException,
     TableHead,
     TableHeader,
@@ -60,7 +59,6 @@ export const CategoryList = () => {
                 }}
             />
             <Table>
-                <TableCaption>A list of your categories.</TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead>No.</TableHead>
@@ -87,8 +85,8 @@ export const CategoryList = () => {
                             >
                                 <AspectRatio ratio={16 / 8}>
                                     <Image
-                                        width={40}
-                                        height={40}
+                                        width={200}
+                                        height={100}
                                         src={category.categoryImageUrl}
                                         alt={category.categoryName}
                                         className="h-full w-full rounded object-cover object-center"
@@ -159,6 +157,18 @@ export const CategoryList = () => {
                     ))}
                 </TableBody>
             </Table>
+            <PrimaryPagination
+                meta={{
+                    page: filter.page,
+                    totalPages: meta?.totalPages,
+                    hasNext: meta?.hasNext,
+                    hasPrevious: meta?.hasPrevious,
+                    totalCount: meta?.totalCount,
+                }}
+                onPageChange={page => {
+                    setFilter(prev => ({ ...prev, page }));
+                }}
+            />
         </div>
     );
 };

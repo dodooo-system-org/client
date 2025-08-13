@@ -1,6 +1,6 @@
 'use client';
 
-import { CourseAPI } from '@/apis/course';
+import { courseAPI } from '@/apis/course';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -47,7 +47,7 @@ export const CourseCreateDialog = memo(
             ) => {
                 toastRef.current = toast.loading('Creating course...');
 
-                return await CourseAPI.createCourse({
+                return await courseAPI.createCourse({
                     categoryId: data.category.categoryId,
                     courseDescription: data.courseDescription,
                     courseImageUrl: data.courseImageUrl,
@@ -61,7 +61,7 @@ export const CourseCreateDialog = memo(
                 toast.success('Course created successfully!');
 
                 // navigate to course detail page
-                router.push(`admin/courses/${data.courseId}`);
+                router.push(`courses/${data.courseId}`);
             },
             onError: (error: Error) => {
                 toast.dismiss(toastRef.current?.toString());
