@@ -1,5 +1,6 @@
 'use client';
 
+import { categoryAPI } from '@/apis/category';
 import { cn } from '@/lib/utils';
 import { ImageUp } from 'lucide-react';
 import Image from 'next/image';
@@ -52,12 +53,15 @@ export const ImageDropZone = memo(
             }
         };
 
-        const handleFileChange = (
+        const handleFileChange = async (
             event: React.ChangeEvent<HTMLInputElement>
         ) => {
             const file = event.target.files?.[0];
             if (file) {
-                handleImageProcessing(file);
+                // handleImageProcessing(file);
+                const url = await categoryAPI.uploadImage(file);
+                console.log(url);
+                setImageSrc(url);
             }
             event.target.value = ''; // Reset input value to allow re-uploading the same file
         };

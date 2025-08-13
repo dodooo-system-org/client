@@ -2,7 +2,7 @@
 
 import { Check, ChevronsUpDown } from 'lucide-react';
 
-import { CategoryAPI } from '@/apis/category';
+import { categoryAPI } from '@/apis/category';
 import { Button } from '@/components/ui/button';
 import {
     Command,
@@ -35,7 +35,7 @@ export const AvailableCategorySelect = memo((props: CategoryFilterProps) => {
 
     const { data: categories = [] } = useQuery({
         queryKey: [REACT_QUERY_KEYS.ADMIN.AVAILABLE_CATEGORIES],
-        queryFn: CategoryAPI.getListAvailableCategories,
+        queryFn: categoryAPI.getListAvailableCategories,
         retry: 1,
     });
 

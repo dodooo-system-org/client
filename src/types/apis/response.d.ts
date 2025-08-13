@@ -11,4 +11,10 @@ declare module '@/types/apis/response' {
         data: T[];
         meta: Meta;
     }
+
+    interface IKSignature {
+        signature: string;
+        expire: number;
+        token: string;
+    }
 }

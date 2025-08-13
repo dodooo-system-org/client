@@ -1,6 +1,6 @@
 'use client';
 
-import { CourseAPI } from '@/apis/course';
+import { courseAPI } from '@/apis/course';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -47,7 +47,7 @@ export const CourseCreateDialog = memo(
             ) => {
                 toastRef.current = toast.loading('Creating course...');
 
-                return await CourseAPI.createCourse({
+                return await courseAPI.createCourse({
                     categoryId: data.category.categoryId,
                     courseDescription: data.courseDescription,
                     courseImageUrl: data.courseImageUrl,
