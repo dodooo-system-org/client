@@ -3,14 +3,16 @@
 import { categoryAPI } from '@/apis/category';
 import { REACT_QUERY_KEYS } from '@/constants';
 import { handleErrorToast } from '@/lib/utils';
+import { createCategorySchema } from '@/lib/validation-schemas';
 import { Pagination, Request } from '@/types/apis/request';
 import { Meta } from '@/types/apis/response';
 import { StatusType } from '@/types/common';
-import { Category } from '@/types/objects';
-import { useQuery } from '@tanstack/react-query';
+import { Category, TimeStampBase } from '@/types/objects';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import Error from 'next/error';
 import { usePathname } from 'next/navigation';
 import { createContext, useState } from 'react';
+import z from 'zod';
 
 type FilterState = Pagination & {
     query?: string;
@@ -24,6 +26,23 @@ type AdminCategoryListContextType = {
     items: (Category & { appliedInCoursesCount: number })[];
     meta?: Meta;
     isFetching?: boolean;
+    onCreate?: (data: z.infer<typeof createCategorySchema>) => Promise<void>;
+    onEdit?: (
+        data: Omit<Category, keyof TimeStampBase['createdAt']>
+    ) => Promise<void>;
+    onActivate?: (
+        categoryId: string,
+        currentCategory: Category
+    ) => Promise<void>;
+    onDeactivate?: (
+        categoryId: string,
+        currentCategory: Category
+    ) => Promise<void>;
+    onDelete?: (categoryId: string, currentCategory: Category) => Promise<void>;
+    onRestore?: (
+        categoryId: string,
+        currentCategory: Category
+    ) => Promise<void>;
 };
 
 export const AdminCategoryListContext =
@@ -48,7 +67,7 @@ export const AdminCategoryListProvider = ({
         queryFn: ({ queryKey }) => {
             try {
                 const filterState = queryKey[1] as FilterState;
-                const payload: Request.AdminGetListCategories = {
+                const payload: Request.Category.AdminGetListCategories = {
                     query: filterState.query?.trim(),
                     isActive:
                         filterState.status === 'active'
@@ -67,6 +86,103 @@ export const AdminCategoryListProvider = ({
         },
         enabled: !!pathname && pathname === '/admin/categories', // Only run query if pathname is defined
     });
+
+    const createCategoryMutation = useMutation({
+        mutationFn: categoryAPI.createCategory,
+        onSuccess: () => {
+            refetch();
+        },
+        onError: (error: unknown) => {
+            throw error;
+        },
+    });
+
+    const editCategoryMutation = useMutation({
+        mutationFn: categoryAPI.updateCategory,
+        onSuccess: () => {
+            refetch();
+        },
+        onError: (error: unknown) => {
+            throw error;
+        },
+    });
+
+    const onCreate = async (data: z.infer<typeof createCategorySchema>) => {
+        await createCategoryMutation.mutateAsync({
+            categoryName: data.categoryName,
+            categoryDescription: data.categoryDescription,
+            categoryImageUrl: data.categoryImageUrl,
+        });
+    };
+
+    const onEdit = async (
+        data: Omit<Category, keyof TimeStampBase['createdAt']>
+    ) => {
+        await editCategoryMutation.mutateAsync(data);
+    };
+
+    const onActivate = async (
+        categoryId: string,
+        currentCategory: Category
+    ) => {
+        // Prevent activation if category is deleted
+        if (currentCategory.isDeleted) {
+            const error = new globalThis.Error(
+                'Cannot activate a deleted category'
+            );
+            throw error;
+        }
+        await editCategoryMutation.mutateAsync({
+            ...currentCategory,
+            categoryId,
+            isActive: true, // Set to active
+        });
+    };
+
+    const onDeactivate = async (
+        categoryId: string,
+        currentCategory: Category
+    ) => {
+        // Prevent deactivation if category is deleted
+        if (currentCategory.isDeleted) {
+            const error = new globalThis.Error(
+                'Cannot deactivate a deleted category'
+            );
+            throw error;
+        }
+        await editCategoryMutation.mutateAsync({
+            ...currentCategory,
+            categoryId,
+            isActive: false, // Set to inactive
+        });
+    };
+
+    const onDelete = async (categoryId: string, currentCategory: Category) => {
+        // Prevent double deletion
+        if (currentCategory.isDeleted) {
+            const error = new globalThis.Error('Category is already deleted');
+            throw error;
+        }
+        await editCategoryMutation.mutateAsync({
+            ...currentCategory,
+            categoryId,
+            isDeleted: true, // Mark as deleted
+        });
+    };
+
+    const onRestore = async (categoryId: string, currentCategory: Category) => {
+        // Only allow restoring deleted categories
+        if (!currentCategory.isDeleted) {
+            const error = new globalThis.Error('Category is not deleted');
+            throw error;
+        }
+        await editCategoryMutation.mutateAsync({
+            ...currentCategory,
+            categoryId,
+            isDeleted: false, // Restore from deleted state
+        });
+    };
+
     return (
         <AdminCategoryListContext.Provider
             value={{
@@ -76,6 +192,12 @@ export const AdminCategoryListProvider = ({
                 items: data?.data || [],
                 meta: data?.meta,
                 isFetching: isFetching,
+                onCreate,
+                onEdit,
+                onActivate,
+                onDeactivate,
+                onDelete,
+                onRestore,
             }}
         >
             {children}

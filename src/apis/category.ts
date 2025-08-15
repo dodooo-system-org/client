@@ -31,7 +31,7 @@ class CategoryAPI {
         );
         return response.data;
     }
-    async getListCategories(payload: Request.AdminGetListCategories) {
+    async getListCategories(payload: Request.Category.AdminGetListCategories) {
         const response = await api.get<
             MetaPagination<Category & { appliedInCoursesCount: number }>
         >(`${protectedEndpoint}`, {
@@ -39,6 +39,15 @@ class CategoryAPI {
         });
         return response.data;
     }
+    public async updateCategory(payload: Request.Category.UpdateCategory) {
+        const { categoryId, ...data } = payload;
+        const response = await api.put<Category>(
+            `${protectedEndpoint}/${categoryId}`,
+            data
+        );
+        return response.data;
+    }
+
     public uploadImage = async (file: File): Promise<string> => {
         const signature = await this.uploadAPI.getSignature();
         return await this.uploadAPI.uploadImage(file, signature, '/category');
