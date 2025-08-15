@@ -16,6 +16,7 @@ export const REACT_QUERY_KEYS = {
         ALL_COURSES: 'all-courses',
         AVAILABLE_CATEGORIES: 'available-categories',
         ALL_CATEGORIES: 'all-categories',
+        DELETED_CATEGORIES: 'deleted-categories',
     },
 };
 

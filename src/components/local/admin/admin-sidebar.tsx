@@ -94,7 +94,7 @@ const data: DataType = {
                 },
                 {
                     title: 'Deleted Categories',
-                    url: '#',
+                    url: '/admin/categories/delete',
                 },
             ],
         },

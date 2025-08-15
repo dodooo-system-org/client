@@ -2,7 +2,7 @@ import { api } from '@/configs/axios.config';
 import { API_ENDPOINTS } from '@/constants';
 import { Request } from '@/types/apis/request';
 import { MetaPagination } from '@/types/apis/response';
-import { Category } from '@/types/objects';
+import { Category, CategoryWithAppliedCount } from '@/types/objects';
 import { UploadAPI } from './upload';
 
 const publicEndpoint = `${API_ENDPOINTS.COURSE_SERVICE.PUBLIC}/category`;
@@ -33,7 +33,7 @@ class CategoryAPI {
     }
     async getListCategories(payload: Request.Category.AdminGetListCategories) {
         const response = await api.get<
-            MetaPagination<Category & { appliedInCoursesCount: number }>
+            MetaPagination<CategoryWithAppliedCount>
         >(`${protectedEndpoint}`, {
             params: payload,
         });
@@ -45,6 +45,17 @@ class CategoryAPI {
             `${protectedEndpoint}/${categoryId}`,
             data
         );
+        return response.data;
+    }
+
+    public async getDeletedCategory(
+        queries: Request.AdminGetDeletedCategories
+    ) {
+        const response = await api.get<
+            MetaPagination<CategoryWithAppliedCount>
+        >(`${protectedEndpoint}/delete`, {
+            params: queries,
+        });
         return response.data;
     }
 

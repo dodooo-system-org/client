@@ -7,7 +7,11 @@ import { createCategorySchema } from '@/lib/validation-schemas';
 import { Pagination, Request } from '@/types/apis/request';
 import { Meta } from '@/types/apis/response';
 import { StatusType } from '@/types/common';
-import { Category, TimeStampBase } from '@/types/objects';
+import {
+    Category,
+    CategoryWithAppliedCount,
+    TimeStampBase,
+} from '@/types/objects';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import Error from 'next/error';
 import { usePathname } from 'next/navigation';
@@ -19,17 +23,19 @@ type FilterState = Pagination & {
     status?: StatusType;
     sortBy?: string;
 };
+
 type AdminCategoryListContextType = {
     filter: FilterState;
     setFilter: React.Dispatch<React.SetStateAction<FilterState>>;
     refetch: () => void;
-    items: (Category & { appliedInCoursesCount: number })[];
+    items: CategoryWithAppliedCount[];
     meta?: Meta;
     isFetching?: boolean;
     onCreate?: (data: z.infer<typeof createCategorySchema>) => Promise<void>;
     onEdit?: (
         data: Omit<Category, keyof TimeStampBase['createdAt']>
     ) => Promise<void>;
+    onUpdate?: (data: Request.Category.UpdateCategory) => Promise<void>;
     onActivate?: (
         categoryId: string,
         currentCategory: Category
@@ -39,10 +45,6 @@ type AdminCategoryListContextType = {
         currentCategory: Category
     ) => Promise<void>;
     onDelete?: (categoryId: string, currentCategory: Category) => Promise<void>;
-    onRestore?: (
-        categoryId: string,
-        currentCategory: Category
-    ) => Promise<void>;
 };
 
 export const AdminCategoryListContext =
@@ -107,6 +109,16 @@ export const AdminCategoryListProvider = ({
         },
     });
 
+    const updateCategoryMutation = useMutation({
+        mutationFn: categoryAPI.updateCategory,
+        onSuccess: () => {
+            refetch();
+        },
+        onError: (error: unknown) => {
+            throw error;
+        },
+    });
+
     const onCreate = async (data: z.infer<typeof createCategorySchema>) => {
         await createCategoryMutation.mutateAsync({
             categoryName: data.categoryName,
@@ -119,6 +131,10 @@ export const AdminCategoryListProvider = ({
         data: Omit<Category, keyof TimeStampBase['createdAt']>
     ) => {
         await editCategoryMutation.mutateAsync(data);
+    };
+
+    const onUpdate = async (data: Request.Category.UpdateCategory) => {
+        await updateCategoryMutation.mutateAsync(data);
     };
 
     const onActivate = async (
@@ -170,19 +186,6 @@ export const AdminCategoryListProvider = ({
         });
     };
 
-    const onRestore = async (categoryId: string, currentCategory: Category) => {
-        // Only allow restoring deleted categories
-        if (!currentCategory.isDeleted) {
-            const error = new globalThis.Error('Category is not deleted');
-            throw error;
-        }
-        await editCategoryMutation.mutateAsync({
-            ...currentCategory,
-            categoryId,
-            isDeleted: false, // Restore from deleted state
-        });
-    };
-
     return (
         <AdminCategoryListContext.Provider
             value={{
@@ -194,10 +197,10 @@ export const AdminCategoryListProvider = ({
                 isFetching: isFetching,
                 onCreate,
                 onEdit,
+                onUpdate,
                 onActivate,
                 onDeactivate,
                 onDelete,
-                onRestore,
             }}
         >
             {children}

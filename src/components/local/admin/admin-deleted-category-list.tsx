@@ -1,16 +1,7 @@
 'use client';
 
-import { CategoryEditDialog } from '@/components/global/category/category-edit-dialog';
 import { PrimaryPagination } from '@/components/global/paginations/primary-pagination';
 import { Button } from '@/components/ui/button';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import {
     Table,
     TableBody,
@@ -20,21 +11,23 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
-    useAdminCategoryList,
-    useAdminDeletedCategoryList,
-} from '@/hooks/use-category-context';
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { useAdminDeletedCategoryList } from '@/hooks/use-category-context';
 import { cn, formatDate, handleErrorToast } from '@/lib/utils';
 import { CategoryWithAppliedCount } from '@/types/objects';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
-import { EllipsisVertical } from 'lucide-react';
+import { RotateCcw } from 'lucide-react';
 import Error from 'next/error';
 import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { AdminCategoryListFilter } from './admin-category-list-filter';
+import { AdminDeletedCategoryListFilter } from './admin-deleted-category-list-filter';
 
-export const CategoryList = () => {
-    const { filter, items, meta, setFilter } = useAdminCategoryList();
+export const AdminDeletedCategoryList = () => {
+    const { filter, items, meta, setFilter } = useAdminDeletedCategoryList();
 
     const [showFullDescription, setShowFullDescription] = useState<
         Record<string, boolean>
@@ -46,10 +39,11 @@ export const CategoryList = () => {
             [categoryId]: !prev[categoryId],
         }));
     };
+
     return (
         <div className="flex flex-col gap-4">
             <div>
-                <AdminCategoryListFilter />
+                <AdminDeletedCategoryListFilter />
             </div>
             <PrimaryPagination
                 meta={{
@@ -71,8 +65,7 @@ export const CategoryList = () => {
                         <TableHead>Name</TableHead>
                         <TableHead>Description</TableHead>
                         <TableHead>Applied</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Updated At</TableHead>
+                        <TableHead>Deleted At</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -94,12 +87,14 @@ export const CategoryList = () => {
                                         height={100}
                                         src={category.categoryImageUrl}
                                         alt={category.categoryName}
-                                        className="h-full w-full rounded object-cover object-center"
+                                        className="h-full w-full rounded object-cover object-center opacity-60"
                                     />
                                 </AspectRatio>
                             </TableCellException>
                             <TableCellException value={category.categoryName}>
-                                {category.categoryName}
+                                <span className="text-gray-500">
+                                    {category.categoryName}
+                                </span>
                             </TableCellException>
                             <TableCellException
                                 value={category.categoryDescription}
@@ -107,7 +102,7 @@ export const CategoryList = () => {
                             >
                                 <p
                                     className={cn(
-                                        'text-wrap break-words',
+                                        'text-wrap break-words text-gray-500',
                                         showFullDescription[category.categoryId]
                                             ? ''
                                             : 'line-clamp-1'
@@ -123,7 +118,7 @@ export const CategoryList = () => {
                                             category.categoryId
                                         )
                                     }
-                                    className="float-right"
+                                    className="float-right text-gray-400"
                                 >
                                     {showFullDescription[category.categoryId]
                                         ? 'Hide'
@@ -134,36 +129,39 @@ export const CategoryList = () => {
                                 className="text-center"
                                 value={category.appliedInCoursesCount}
                             >
-                                {category.appliedInCoursesCount}
-                            </TableCellException>
-                            <TableCellException value={category.isActive}>
-                                {category.isDeleted ? (
-                                    <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-500">
-                                        Deleted
-                                    </span>
-                                ) : category.isActive ? (
-                                    <span className="rounded-full bg-green-100 px-2 py-1 text-green-500 dark:bg-green-900">
-                                        Active
-                                    </span>
-                                ) : (
-                                    <span className="bg-destructive/10 text-destructive dark:bg-destructive/40 rounded-full px-2 py-1">
-                                        Inactive
-                                    </span>
-                                )}
+                                <span className="text-gray-500">
+                                    {category.appliedInCoursesCount}
+                                </span>
                             </TableCellException>
                             <TableCellException value={category.updatedAt}>
-                                {category.updatedAt
-                                    ? formatDate(category.updatedAt, 'medium')
-                                    : '--'}
+                                <span className="text-gray-500">
+                                    {category.updatedAt
+                                        ? formatDate(
+                                              category.updatedAt,
+                                              'medium'
+                                          )
+                                        : '--'}
+                                </span>
                             </TableCellException>
                             <TableCellException
                                 className="text-right"
                                 value={true}
                             >
-                                <DropdownActions category={category} />
+                                <RestoreAction category={category} />
                             </TableCellException>
                         </TableRow>
                     ))}
+                    {(!items || items.length === 0) && (
+                        <TableRow>
+                            <TableCellException
+                                className="h-24 text-center text-gray-500"
+                                colSpan={7}
+                                value="No deleted categories found"
+                            >
+                                No deleted categories found
+                            </TableCellException>
+                        </TableRow>
+                    )}
                 </TableBody>
             </Table>
             <PrimaryPagination
@@ -182,104 +180,43 @@ export const CategoryList = () => {
     );
 };
 
-const DropdownActions = ({
+const RestoreAction = ({
     category,
 }: {
     category: CategoryWithAppliedCount;
 }) => {
-    const [showForm, setShowForm] = useState(false);
-    const { onActivate, onDeactivate, onDelete } = useAdminCategoryList();
     const { onRestore } = useAdminDeletedCategoryList();
 
-    const handleActivate = async () => {
-        const toastId = toast.loading(
-            `${category.isActive ? 'Deactivating' : 'Activating'} category...`
-        );
-        try {
-            if (category.isActive) {
-                await onDeactivate?.(category.categoryId, category);
-                toast.dismiss(toastId);
-                toast.success('Category deactivated successfully!');
-            } else {
-                await onActivate?.(category.categoryId, category);
-                toast.dismiss(toastId);
-                toast.success('Category activated successfully!');
-            }
-        } catch (error: unknown) {
-            handleErrorToast(error as Error, toastId as string);
-        }
-    };
-
-    const handleDelete = async () => {
-        const confirmMessage = `Are you sure you want to delete the category "${category.categoryName}"?\n\nThis category is currently applied to ${category.appliedInCoursesCount} course${category.appliedInCoursesCount === 1 ? '' : 's'}. This action can be undone later.`;
+    const handleRestore = async () => {
+        const confirmMessage = `Are you sure you want to restore the category "${category.categoryName}"?`;
 
         if (window.confirm(confirmMessage)) {
-            const toastId = toast.loading('Deleting category...');
+            const toastId = toast.loading('Restoring category...');
             try {
-                await onDelete?.(category.categoryId, category);
+                await onRestore?.(category.categoryId, category);
                 toast.dismiss(toastId);
-                toast.success('Category deleted successfully!');
+                toast.success('Category restored successfully!');
             } catch (error) {
                 handleErrorToast(error as Error, toastId as string);
             }
         }
     };
 
-    const handleRestore = async () => {
-        const toastId = toast.loading('Restoring category...');
-        try {
-            await onRestore?.(category.categoryId, category);
-            toast.dismiss(toastId);
-            toast.success('Category restored successfully!');
-        } catch (error) {
-            handleErrorToast(error as Error, toastId as string);
-        }
-    };
-
     return (
-        <>
-            <CategoryEditDialog
-                currentCategory={category}
-                isOpen={showForm}
-                onOpenChange={setShowForm}
-            />
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <EllipsisVertical />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-20">
-                    <DropdownMenuGroup>
-                        {!category.isDeleted && (
-                            <DropdownMenuItem onClick={handleActivate}>
-                                {category.isActive ? 'Deactivate' : 'Activate'}
-                            </DropdownMenuItem>
-                        )}
-                        {!category.isDeleted && (
-                            <DropdownMenuItem onClick={() => setShowForm(true)}>
-                                Edit
-                            </DropdownMenuItem>
-                        )}
-                        {!category.isDeleted && <DropdownMenuSeparator />}
-                        {category.isDeleted ? (
-                            <DropdownMenuItem
-                                onClick={handleRestore}
-                                className="text-blue-600 focus:text-blue-600"
-                            >
-                                Restore
-                            </DropdownMenuItem>
-                        ) : (
-                            <DropdownMenuItem
-                                onClick={handleDelete}
-                                className="text-destructive focus:text-destructive"
-                            >
-                                Delete
-                            </DropdownMenuItem>
-                        )}
-                    </DropdownMenuGroup>
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </>
+        <Tooltip>
+            <TooltipTrigger asChild>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleRestore}
+                    className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 focus:text-blue-700"
+                >
+                    <RotateCcw className="mr-1 h-4 w-4" />
+                </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" align="end">
+                <p>Restore this category</p>
+            </TooltipContent>
+        </Tooltip>
     );
 };
