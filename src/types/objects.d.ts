@@ -14,6 +14,10 @@ declare module '@/types/objects' {
         categoryImageUrl: string;
     }
 
+    interface CategoryWithAppliedCount extends Category {
+        appliedInCoursesCount: number;
+    }
+
     interface CoursePreview extends TimeStampBase {
         courseId: string;
         courseName: string;
