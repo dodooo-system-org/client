@@ -9,6 +9,22 @@ declare module '@/types/apis/request' {
     }
 
     namespace Request {
+        namespace Category {
+            interface AdminGetListCategories extends Pagination {
+                isActive: boolean | null;
+                isDeleted: boolean | null;
+            }
+            interface UpdateCategory
+                extends Pick<
+                    Category,
+                    | 'categoryId'
+                    | 'categoryName'
+                    | 'categoryDescription'
+                    | 'categoryImageUrl'
+                    | 'isActive'
+                    | 'isDeleted'
+                > {}
+        }
         interface AdminGetListCourses extends Pagination {
             categoryId: string | null;
             courseLevel: number | null;
@@ -24,10 +40,6 @@ declare module '@/types/apis/request' {
                 | 'courseLevel'
             > {
             categoryId: string;
-        }
-        interface AdminGetListCategories extends Pagination {
-            isActive: boolean | null;
-            isDeleted: boolean | null;
         }
     }
 }

@@ -14,6 +14,8 @@ export const createCategorySchema = z.object({
         .min(1, 'Please upload a category image'),
 });
 
+export const updateCategorySchema = createCategorySchema;
+
 export const createCormSchema = z.object({
     courseName: z
         .string()

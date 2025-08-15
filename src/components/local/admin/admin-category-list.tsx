@@ -1,5 +1,6 @@
 'use client';
 
+import { CategoryEditDialog } from '@/components/global/category/category-edit-dialog';
 import { PrimaryPagination } from '@/components/global/paginations/primary-pagination';
 import { AdminCategoryListContext } from '@/components/providers/category-management.provider';
 import { Button } from '@/components/ui/button';
@@ -19,11 +20,14 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import { cn, formatDate } from '@/lib/utils';
+import { cn, formatDate, handleErrorToast } from '@/lib/utils';
+import { Category } from '@/types/objects';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { EllipsisVertical } from 'lucide-react';
+import Error from 'next/error';
 import Image from 'next/image';
 import { useContext, useState } from 'react';
+import { toast } from 'react-toastify';
 import { AdminCategoryListFilter } from './admin-category-list-filter';
 
 export const CategoryList = () => {
@@ -132,7 +136,11 @@ export const CategoryList = () => {
                                 {category.appliedInCoursesCount}
                             </TableCellException>
                             <TableCellException value={category.isActive}>
-                                {category.isActive ? (
+                                {category.isDeleted ? (
+                                    <span className="rounded-full bg-gray-100 px-2 py-1 text-gray-500">
+                                        Deleted
+                                    </span>
+                                ) : category.isActive ? (
                                     <span className="rounded-full bg-green-100 px-2 py-1 text-green-500">
                                         Active
                                     </span>
@@ -151,7 +159,7 @@ export const CategoryList = () => {
                                 className="text-right"
                                 value={true}
                             >
-                                <DropdownActions />
+                                <DropdownActions category={category} />
                             </TableCellException>
                         </TableRow>
                     ))}
@@ -173,23 +181,105 @@ export const CategoryList = () => {
     );
 };
 
-const DropdownActions = () => {
+const DropdownActions = ({
+    category,
+}: {
+    category: Category & { appliedInCoursesCount: number };
+}) => {
+    const [showForm, setShowForm] = useState(false);
+    const { onActivate, onDeactivate, onDelete, onRestore } = useContext(
+        AdminCategoryListContext
+    );
+
+    const handleActivate = async () => {
+        const toastId = toast.loading(
+            `${category.isActive ? 'Deactivating' : 'Activating'} category...`
+        );
+        try {
+            if (category.isActive) {
+                await onDeactivate?.(category.categoryId, category);
+                toast.dismiss(toastId);
+                toast.success('Category deactivated successfully!');
+            } else {
+                await onActivate?.(category.categoryId, category);
+                toast.dismiss(toastId);
+                toast.success('Category activated successfully!');
+            }
+        } catch (error: unknown) {
+            handleErrorToast(error as Error, toastId as string);
+        }
+    };
+
+    const handleDelete = async () => {
+        const confirmMessage = `Are you sure you want to delete the category "${category.categoryName}"?\n\nThis category is currently applied to ${category.appliedInCoursesCount} course${category.appliedInCoursesCount === 1 ? '' : 's'}. This action can be undone later.`;
+
+        if (window.confirm(confirmMessage)) {
+            const toastId = toast.loading('Deleting category...');
+            try {
+                await onDelete?.(category.categoryId, category);
+                toast.dismiss(toastId);
+                toast.success('Category deleted successfully!');
+            } catch (error) {
+                handleErrorToast(error as Error, toastId as string);
+            }
+        }
+    };
+
+    const handleRestore = async () => {
+        const toastId = toast.loading('Restoring category...');
+        try {
+            await onRestore?.(category.categoryId, category);
+            toast.dismiss(toastId);
+            toast.success('Category restored successfully!');
+        } catch (error) {
+            handleErrorToast(error as Error, toastId as string);
+        }
+    };
+
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                    <EllipsisVertical />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="min-w-20">
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>View</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Delete</DropdownMenuItem>
-                </DropdownMenuGroup>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+            <CategoryEditDialog
+                currentCategory={category}
+                isOpen={showForm}
+                onOpenChange={setShowForm}
+            />
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                        <EllipsisVertical />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="min-w-20">
+                    <DropdownMenuGroup>
+                        {!category.isDeleted && (
+                            <DropdownMenuItem onClick={handleActivate}>
+                                {category.isActive ? 'Deactivate' : 'Activate'}
+                            </DropdownMenuItem>
+                        )}
+                        {!category.isDeleted && (
+                            <DropdownMenuItem onClick={() => setShowForm(true)}>
+                                Edit
+                            </DropdownMenuItem>
+                        )}
+                        {!category.isDeleted && <DropdownMenuSeparator />}
+                        {category.isDeleted ? (
+                            <DropdownMenuItem
+                                onClick={handleRestore}
+                                className="text-blue-600 focus:text-blue-600"
+                            >
+                                Restore
+                            </DropdownMenuItem>
+                        ) : (
+                            <DropdownMenuItem
+                                onClick={handleDelete}
+                                className="text-destructive focus:text-destructive"
+                            >
+                                Delete
+                            </DropdownMenuItem>
+                        )}
+                    </DropdownMenuGroup>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </>
     );
 };

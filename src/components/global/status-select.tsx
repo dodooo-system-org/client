@@ -31,7 +31,7 @@ export const StatusSelect = memo(
                 <SelectContent>
                     <SelectItem value="active">Active</SelectItem>
                     <SelectItem value="inactive">Inactive</SelectItem>
-                    <SelectItem value="deleted">Deleted</SelectItem>
+                    {/* <SelectItem value="deleted">Deleted</SelectItem> */}
                 </SelectContent>
             </Select>
         );

@@ -1,6 +1,5 @@
 'use client';
 
-import { categoryAPI } from '@/apis/category';
 import { AdminCategoryListContext } from '@/components/providers/category-management.provider';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,8 +14,6 @@ import {
 import { handleErrorToast } from '@/lib/utils';
 import { createCategorySchema } from '@/lib/validation-schemas';
 import { CustomizedDialogProps, FormAction } from '@/types/common';
-import { Category } from '@/types/objects';
-import { useMutation } from '@tanstack/react-query';
 import Error from 'next/error';
 import { memo, useContext, useRef } from 'react';
 import { toast } from 'react-toastify';
@@ -30,49 +27,22 @@ type CategoryCreateDialogProps = Pick<
 
 export const CategoryCreateDialog = memo(
     ({ isOpen, onOpenChange, triggerNode }: CategoryCreateDialogProps) => {
-        const { refetch: refetchCategoryList } = useContext(
-            AdminCategoryListContext
-        );
+        const { onCreate } = useContext(AdminCategoryListContext);
 
         const formRef = useRef<FormAction>(null);
-        const toastRef = useRef<ReturnType<typeof toast.loading>>(null);
-
-        const createCategoryMutation = useMutation({
-            mutationFn: async (
-                data: Pick<
-                    Category,
-                    'categoryName' | 'categoryDescription' | 'categoryImageUrl'
-                >
-            ) => {
-                toastRef.current = toast.loading('Creating category...');
-
-                return await categoryAPI.createCategory({
-                    categoryName: data.categoryName,
-                    categoryDescription: data.categoryDescription,
-                    categoryImageUrl: data.categoryImageUrl,
-                });
-            },
-            onSuccess: () => {
-                onOpenChange?.(false);
-                toast.dismiss(toastRef.current?.toString());
-                toast.success('Category created successfully!');
-                refetchCategoryList();
-            },
-            onError: (error: Error) => {
-                toast.dismiss(toastRef.current?.toString());
-                handleErrorToast(error);
-            },
-            onSettled: () => {
-                formRef.current?.reset();
-            },
-        });
 
         const onSubmit = (data: z.infer<typeof createCategorySchema>) => {
-            createCategoryMutation.mutate({
-                categoryName: data.categoryName,
-                categoryDescription: data.categoryDescription,
-                categoryImageUrl: data.categoryImageUrl,
-            });
+            const toastId = toast.loading('Creating category...') as string;
+            onCreate?.(data)
+                .then(() => {
+                    onOpenChange?.(false);
+                    formRef.current?.reset();
+                    toast.dismiss(toastId);
+                    toast.success('Category created successfully!');
+                })
+                .catch((error: Error) => {
+                    handleErrorToast(error, toastId);
+                });
         };
 
         return (
