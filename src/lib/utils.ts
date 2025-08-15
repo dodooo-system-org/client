@@ -37,7 +37,11 @@ export function formatDate(
     }).format(new Date(date || Date.now()));
 }
 
-export function handleErrorToast(error: Error) {
+export function handleErrorToast(error: Error, toastId?: string) {
+    if (toastId) {
+        toast.dismiss(toastId);
+    }
+
     if (error.props.statusCode > 300 && error.props.statusCode < 400) {
         toast.warning(error.props.title);
     } else if (error.props.statusCode >= 400 && error.props.statusCode <= 500) {

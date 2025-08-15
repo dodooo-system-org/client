@@ -1,5 +1,6 @@
 import { AdminCategoryListProvider } from './category-management.provider';
 import { CourseManagementProvider } from './course-management.provider';
+import { AdminDeletedCategoryListProvider } from './deleted-category-management.provider';
 import { ReactQueryProvider } from './react-query.provider';
 import { ThemeProvider } from './theme.provider';
 
@@ -13,10 +14,11 @@ export const Provider = ({ children }: { children: React.ReactNode }) => {
         >
             <ReactQueryProvider>
                 <AdminCategoryListProvider>
-                    {' '}
-                    <CourseManagementProvider>
-                        {children}
-                    </CourseManagementProvider>
+                    <AdminDeletedCategoryListProvider>
+                        <CourseManagementProvider>
+                            {children}
+                        </CourseManagementProvider>
+                    </AdminDeletedCategoryListProvider>
                 </AdminCategoryListProvider>
             </ReactQueryProvider>
         </ThemeProvider>
