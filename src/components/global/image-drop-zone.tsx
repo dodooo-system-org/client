@@ -2,11 +2,11 @@
 
 import { cn } from '@/lib/utils';
 import { ImageUp } from 'lucide-react';
-import Image from 'next/image';
 import { Fragment, memo, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { AspectRatio } from '../ui/aspect-ratio';
 import { Input } from '../ui/input';
+import { ImageWithPlaceholder } from './ImageWithPlaceholder';
 
 type ImageDropZoneProps = {
     initialImageSrc?: string;
@@ -118,7 +118,7 @@ export const ImageDropZone = memo(
                 onDrop={handleDrop}
             >
                 {imageSrc ? (
-                    <Image
+                    <ImageWithPlaceholder
                         src={imageSrc}
                         alt="Uploaded"
                         className="mt-2 h-full w-full rounded-lg border object-cover object-center"

@@ -5,8 +5,8 @@ import { Separator } from '@/components/ui/separator';
 import { cn, formatDate } from '@/lib/utils';
 import { CoursePreview } from '@/types/objects';
 import { Calendar, Package, Presentation } from 'lucide-react';
-import Image from 'next/image';
 import { memo } from 'react';
+import { ImageWithPlaceholder } from './ImageWithPlaceholder';
 
 export const CourseCard = memo(
     ({ coursePreview }: { coursePreview: CoursePreview }) => {
@@ -17,7 +17,7 @@ export const CourseCard = memo(
                         ratio={16 / 8}
                         className="relative overflow-hidden"
                     >
-                        <Image
+                        <ImageWithPlaceholder
                             src={coursePreview.courseImageUrl || '/800x400.svg'}
                             blurDataURL="/800x400.svg"
                             alt="Course Image"

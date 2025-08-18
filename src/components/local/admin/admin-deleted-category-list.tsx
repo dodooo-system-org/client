@@ -1,5 +1,6 @@
 'use client';
 
+import { ImageWithPlaceholder } from '@/components/global/ImageWithPlaceholder';
 import { PrimaryPagination } from '@/components/global/paginations/primary-pagination';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,7 +22,6 @@ import { CategoryWithAppliedCount } from '@/types/objects';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { RotateCcw } from 'lucide-react';
 import Error from 'next/error';
-import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { AdminDeletedCategoryListFilter } from './admin-deleted-category-list-filter';
@@ -82,7 +82,7 @@ export const AdminDeletedCategoryList = () => {
                                 value={category.categoryImageUrl}
                             >
                                 <AspectRatio ratio={16 / 8}>
-                                    <Image
+                                    <ImageWithPlaceholder
                                         width={200}
                                         height={100}
                                         src={category.categoryImageUrl}

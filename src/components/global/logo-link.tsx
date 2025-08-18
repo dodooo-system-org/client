@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { HTMLAttributeAnchorTarget, memo } from 'react';
+import { ImageWithPlaceholder } from './ImageWithPlaceholder';
 
 type LogoLinkProps = {
     target?: HTMLAttributeAnchorTarget;
@@ -16,7 +16,7 @@ export const LogoLink = memo(
         };
         return (
             <Link href="/" target={target}>
-                <Image
+                <ImageWithPlaceholder
                     src="/logo.jpg"
                     alt="Logo"
                     className={sizeClasses[size]}

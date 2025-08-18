@@ -1,6 +1,7 @@
 'use client';
 
 import { CategoryEditDialog } from '@/components/global/category/category-edit-dialog';
+import { ImageWithPlaceholder } from '@/components/global/ImageWithPlaceholder';
 import { PrimaryPagination } from '@/components/global/paginations/primary-pagination';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,16 +20,12 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    useAdminCategoryList,
-    useAdminDeletedCategoryList,
-} from '@/hooks/use-category-context';
+import { useAdminCategoryList } from '@/hooks/use-category-context';
 import { cn, formatDate, handleErrorToast } from '@/lib/utils';
 import { CategoryWithAppliedCount } from '@/types/objects';
 import { AspectRatio } from '@radix-ui/react-aspect-ratio';
 import { EllipsisVertical } from 'lucide-react';
 import Error from 'next/error';
-import Image from 'next/image';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { AdminCategoryListFilter } from './admin-category-list-filter';
@@ -89,7 +86,7 @@ export const CategoryList = () => {
                                 value={category.categoryImageUrl}
                             >
                                 <AspectRatio ratio={16 / 8}>
-                                    <Image
+                                    <ImageWithPlaceholder
                                         width={200}
                                         height={100}
                                         src={category.categoryImageUrl}
@@ -189,7 +186,6 @@ const DropdownActions = ({
 }) => {
     const [showForm, setShowForm] = useState(false);
     const { onActivate, onDeactivate, onDelete } = useAdminCategoryList();
-    const { onRestore } = useAdminDeletedCategoryList();
 
     const handleActivate = async () => {
         const toastId = toast.loading(
@@ -225,17 +221,6 @@ const DropdownActions = ({
         }
     };
 
-    const handleRestore = async () => {
-        const toastId = toast.loading('Restoring category...');
-        try {
-            await onRestore?.(category.categoryId, category);
-            toast.dismiss(toastId);
-            toast.success('Category restored successfully!');
-        } catch (error) {
-            handleErrorToast(error as Error, toastId as string);
-        }
-    };
-
     return (
         <>
             <CategoryEditDialog
@@ -262,21 +247,12 @@ const DropdownActions = ({
                             </DropdownMenuItem>
                         )}
                         {!category.isDeleted && <DropdownMenuSeparator />}
-                        {category.isDeleted ? (
-                            <DropdownMenuItem
-                                onClick={handleRestore}
-                                className="text-blue-600 focus:text-blue-600"
-                            >
-                                Restore
-                            </DropdownMenuItem>
-                        ) : (
-                            <DropdownMenuItem
-                                onClick={handleDelete}
-                                className="text-destructive focus:text-destructive"
-                            >
-                                Delete
-                            </DropdownMenuItem>
-                        )}
+                        <DropdownMenuItem
+                            onClick={handleDelete}
+                            className="text-destructive focus:text-destructive"
+                        >
+                            Delete
+                        </DropdownMenuItem>
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
