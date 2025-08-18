@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
 export const REACT_QUERY_KEYS = {
     ADMIN: {
         ALL_COURSES: 'all-courses',
+        DELETED_COURSES: 'deleted-courses',
         AVAILABLE_CATEGORIES: 'available-categories',
         ALL_CATEGORIES: 'all-categories',
         DELETED_CATEGORIES: 'deleted-categories',

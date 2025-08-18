@@ -5,82 +5,80 @@ import { REACT_QUERY_KEYS } from '@/constants';
 import { handleErrorToast } from '@/lib/utils';
 import { Pagination, Request } from '@/types/apis/request';
 import { Meta } from '@/types/apis/response';
-import { StatusType } from '@/types/common';
 import { Category, CoursePreview } from '@/types/objects';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import Error from 'next/error';
 import { usePathname } from 'next/navigation';
 import React, { createContext, useState } from 'react';
 
-type FilterState = Pagination & {
-    query: string;
-    category: Category | null;
-    level: number | null;
-    status: StatusType | null;
+type DeletedCourseFilterState = Pagination & {
+    query?: string;
+    category?: Category | null;
+    level?: number | null;
+    startDate?: Date;
+    endDate?: Date;
 };
 
-type AdminCourseListContextType = {
-    filter: FilterState;
-    setFilter: React.Dispatch<React.SetStateAction<FilterState>>;
+type AdminDeletedCourseListContextType = {
+    filter: DeletedCourseFilterState;
+    setFilter: React.Dispatch<React.SetStateAction<DeletedCourseFilterState>>;
     refetch: () => void;
     items: CoursePreview[];
     meta?: Meta;
     isFetching?: boolean;
 };
 
-export const AdminListCourseContext = createContext<AdminCourseListContextType>(
-    {} as AdminCourseListContextType
-);
+export const AdminDeletedCourseListContext =
+    createContext<AdminDeletedCourseListContextType>(
+        {} as AdminDeletedCourseListContextType
+    );
 
-export const CourseManagementProvider = ({
+export const DeletedCourseManagementProvider = ({
     children,
 }: {
     children: React.ReactNode;
 }) => {
     const pathname = usePathname();
 
-    const [filter, setFilter] = useState<FilterState>({
+    const [filter, setFilter] = useState<DeletedCourseFilterState>({
         query: '',
         category: null,
         level: null,
-        status: null,
+        startDate: undefined,
+        endDate: undefined,
         page: 1,
         size: 10,
     });
 
     const { data, refetch, isFetching } = useQuery({
-        queryKey: [REACT_QUERY_KEYS.ADMIN.ALL_COURSES, filter],
+        queryKey: [REACT_QUERY_KEYS.ADMIN.DELETED_COURSES, filter],
         queryFn: async ({ queryKey }) => {
             try {
-                const filterState = queryKey[1] as FilterState;
-                const payload: Request.AdminGetListCourses = {
-                    query: filterState.query.trim(),
+                const filterState = queryKey[1] as DeletedCourseFilterState;
+                const payload: Request.AdminGetDeletedCourse = {
+                    query: filterState.query?.trim(),
                     categoryId:
-                        filterState.category &&
-                        filterState.category?.categoryId,
-                    courseLevel: filterState.level,
-                    isActive:
-                        filterState.status === 'active'
-                            ? true
-                            : filterState.status === 'inactive'
-                              ? false
-                              : null,
-                    isDeleted: filterState.status === 'deleted' ? true : null,
+                        (filterState.category &&
+                            filterState.category?.categoryId) ||
+                        null,
+                    courseLevel: filterState.level ?? null,
+                    startDate: filterState.startDate,
+                    endDate: filterState.endDate,
                     page: filterState.page,
                     size: filterState.size,
                 };
-                return await courseAPI.getListCourses(payload);
+                return await courseAPI.getDeletedCourses(payload);
             } catch (error: unknown) {
                 handleErrorToast(error as Error);
             }
         },
         retry: 2,
         placeholderData: keepPreviousData,
-        enabled: pathname === '/admin/courses',
+        enabled: pathname === '/admin/courses/delete',
     });
 
     return (
-        <AdminListCourseContext.Provider
+        <AdminDeletedCourseListContext.Provider
             value={{
                 filter,
                 setFilter,
@@ -91,6 +89,8 @@ export const CourseManagementProvider = ({
             }}
         >
             {children}
-        </AdminListCourseContext.Provider>
+        </AdminDeletedCourseListContext.Provider>
     );
 };
+
+export type { AdminDeletedCourseListContextType, DeletedCourseFilterState };

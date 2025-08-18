@@ -33,6 +33,16 @@ class CourseAPI {
         return response.data;
     }
 
+    public async getDeletedCourses(queries: Request.AdminGetDeletedCourse) {
+        const response = await api.get<MetaPagination<CoursePreview>>(
+            `${protectedEndpoint}/delete`,
+            {
+                params: queries,
+            }
+        );
+        return response.data;
+    }
+
     public uploadImage = async (file: File): Promise<string> => {
         const signature = await this.uploadAPI.getSignature();
         return await this.uploadAPI.uploadImage(file, signature, '/course');

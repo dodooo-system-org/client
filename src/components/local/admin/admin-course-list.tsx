@@ -1,16 +1,13 @@
 'use client';
 
 import { CourseCard } from '@/components/global/course-card';
-import { PrimaryPagination } from '@/components/global/paginations/primary-pagination';
+import { PrimaryPagination } from '@/components/global/pagination/primary-pagination';
 import { CardSkeleton } from '@/components/global/skeletons/card-skeleton';
-import { AdminListCourseContext } from '@/components/providers/course-management.provider';
-import { useContext } from 'react';
+import { useAdminCourseList } from '@/hooks/use-course-context';
 import { AdminCourseListFilter } from './admin-course-list-filter';
 
 export const CourseList = () => {
-    const { setFilter, items, meta, isFetching } = useContext(
-        AdminListCourseContext
-    );
+    const { setFilter, items, meta, isFetching } = useAdminCourseList();
 
     return (
         <div className="space-y-8">

@@ -63,8 +63,8 @@ const data: DataType = {
                     url: '/admin/courses',
                 },
                 {
-                    title: 'Featured Courses',
-                    url: '#',
+                    title: 'Deleted Courses',
+                    url: '/admin/courses/delete',
                 },
             ],
         },

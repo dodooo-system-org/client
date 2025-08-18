@@ -17,6 +17,8 @@ const pathLabels = new Map<string, string>([
     ['/admin', 'Home'],
     ['/admin/courses', 'All Courses'],
     ['/admin/categories', 'All Categories'],
+    ['/admin/courses/delete', 'Deleted Courses'],
+    ['/admin/categories/delete', 'Deleted Categories'],
 ]);
 
 type BreadcrumbItemType = {

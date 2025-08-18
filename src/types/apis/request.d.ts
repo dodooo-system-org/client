@@ -31,6 +31,12 @@ declare module '@/types/apis/request' {
             isDeleted: boolean | null;
         }
 
+        interface AdminGetDeletedCourse
+            extends Omit<AdminGetListCourses, 'isActive' | 'isDeleted'> {
+            startDate?: Date;
+            endDate?: Date;
+        }
+
         interface AdminGetDeletedCategories extends Pagination {
             startDate?: Date;
             endDate?: Date;

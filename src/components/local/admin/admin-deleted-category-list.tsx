@@ -1,7 +1,7 @@
 'use client';
 
 import { ImageWithPlaceholder } from '@/components/global/ImageWithPlaceholder';
-import { PrimaryPagination } from '@/components/global/paginations/primary-pagination';
+import { PrimaryPagination } from '@/components/global/pagination/primary-pagination';
 import { Button } from '@/components/ui/button';
 import {
     Table,

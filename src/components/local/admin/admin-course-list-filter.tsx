@@ -2,17 +2,17 @@
 
 import { CourseLevelSelect } from '@/components/global/course-level-select';
 import { StatusSelect } from '@/components/global/status-select';
-import { AdminListCourseContext } from '@/components/providers/course-management.provider';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAdminCourseList } from '@/hooks/use-course-context';
 import { StatusType } from '@/types/common';
 import { CoursePreview } from '@/types/objects';
 import { Search } from 'lucide-react';
-import { useContext, useEffect, useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { AvailableCategorySelect } from '../../global/available-category-select';
 
 export const AdminCourseListFilter = () => {
-    const { filter, setFilter } = useContext(AdminListCourseContext);
+    const { filter, setFilter } = useAdminCourseList();
     const [search, setSearch] = useState('');
 
     const inputId = useId();
