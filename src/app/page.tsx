@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -367,6 +368,20 @@ export default function Home() {
                     </div>
                 </div>
             </footer>
+=======
+import { BestFeedback } from '@/components/local/home/best-feedbacks';
+import { CourseCategories } from '@/components/local/home/course-categories';
+import { CTASection } from '@/components/local/home/cta-section';
+import { HeroSection } from '@/components/local/home/hero-section';
+
+export default function Home() {
+    return (
+        <div>
+            <HeroSection />
+            <CourseCategories />
+            <BestFeedback />
+            <CTASection />
+>>>>>>> fdf7f40 (feat: home/landing page)
         </div>
     );
 }
