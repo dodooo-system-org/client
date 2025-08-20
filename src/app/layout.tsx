@@ -1,3 +1,6 @@
+import { Footer } from '@/components/global/footer';
+import { Header } from '@/components/global/header';
+import { RecommendMessage } from '@/components/global/recommend-message';
 import { Provider } from '@/components/providers/providers';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -15,8 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: 'Dodooo',
-    description: 'Interactive study platform',
+    title: process.env.NEXT_PUBLIC_WEBSITE_NAME,
+    description: process.env.NEXT_PUBLIC_WEBSITE_DESCRIPTION,
 };
 
 export default function RootLayout({
@@ -34,7 +37,12 @@ export default function RootLayout({
                     position="bottom-right"
                     className="text-sm"
                 />
-                <Provider>{children}</Provider>
+                <Provider>
+                    <RecommendMessage />
+                    <Header />
+                    <main>{children}</main>
+                    <Footer />
+                </Provider>
             </body>
         </html>
     );

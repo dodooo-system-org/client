@@ -81,9 +81,24 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
     );
 }
 
+function CardAnimate({ className, ...props }: React.ComponentProps<'div'>) {
+    return (
+        <Card
+            className={cn(
+                'bg-third/5 group hover:border-third border-third/30 shadow-third/50 border-2 p-8 transition-all ease-in-out hover:scale-110 hover:rotate-6 hover:shadow-2xl',
+                className
+            )}
+            {...props}
+        >
+            {props.children}
+        </Card>
+    );
+}
+
 export {
     Card,
     CardAction,
+    CardAnimate,
     CardContent,
     CardDescription,
     CardFooter,

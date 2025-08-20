@@ -3,6 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 const buttonVariants = cva(
     "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -55,4 +56,34 @@ function Button({
     );
 }
 
-export { Button, buttonVariants };
+interface ButtonLinkProps
+    extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+    href: string;
+    icon?: React.ReactNode;
+    iconPosition?: 'start' | 'end';
+}
+
+function ButtonLink({
+    iconPosition = 'start',
+    children,
+    ...props
+}: ButtonLinkProps) {
+    return (
+        <Link
+            {...props}
+            className={cn(
+                'flex items-center gap-2',
+                {
+                    'flex-row-reverse justify-end': iconPosition === 'end',
+                    'justify-start': iconPosition === 'start',
+                },
+                props.className
+            )}
+        >
+            {props.icon && props.icon}
+            {children}
+        </Link>
+    );
+}
+
+export { Button, ButtonLink, buttonVariants };
